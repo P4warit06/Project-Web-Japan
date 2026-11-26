@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { requireMember } from "@/features/auth/dal";
 import { parseForm } from "@/features/common/form";
 import type { FormState } from "@/features/common/types";
+import { collectTripMediaKeys, deleteStoredKeys } from "@/features/media/core";
 import { db } from "@/lib/db";
+import { getStorage } from "@/lib/storage";
 import { createTripFor, deleteTripFor, updateTripFor } from "./core";
 import { createTripSchema, deleteSchema, updateTripSchema } from "./schema";
 
@@ -31,6 +33,11 @@ export async function updateTripAction(_prev: FormState, formData: FormData): Pr
 export async function deleteTripAction(formData: FormData): Promise<void> {
   const { coupleSpaceId } = await requireMember();
   const parsed = parseForm(deleteSchema, formData);
-  if (parsed.ok) await deleteTripFor(db, coupleSpaceId, parsed.data.id);
+  if (parsed.ok) {
+    // Photo rows disappear with the trip (cascade), so read their file keys first.
+    const keys = await collectTripMediaKeys(db, coupleSpaceId, parsed.data.id);
+    const deleted = await deleteTripFor(db, coupleSpaceId, parsed.data.id);
+    if (deleted) await deleteStoredKeys(getStorage(), keys);
+  }
   redirect("/trips");
 }
