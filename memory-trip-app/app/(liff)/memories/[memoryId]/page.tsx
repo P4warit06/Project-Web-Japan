@@ -5,6 +5,8 @@ import { deleteMemoryAction } from "@/features/memories/actions";
 import { getMemory } from "@/features/memories/service";
 import { getT } from "@/lib/i18n/server";
 import { formatDateTime, lineStyle } from "@/components/format";
+import { PhotoGrid } from "@/components/media/photo";
+import { PhotoUploader } from "@/components/media/photo-uploader";
 import { BackLink } from "@/components/ui/back-link";
 import { buttonClass } from "@/components/ui/button";
 import { ConfirmDelete } from "@/components/ui/confirm-delete";
@@ -46,6 +48,19 @@ export default async function MemoryPage({ params }: Props) {
           ))}
         </div>
       )}
+      <section aria-labelledby="memory-photos" className="mt-10">
+        <h2 id="memory-photos" className="mb-3 text-lg font-semibold">
+          {t("media.title")}
+        </h2>
+        <PhotoUploader tripId={memory.tripId} memoryId={memory.id} />
+        {memory.media.length > 0 ? (
+          <div className="mt-4">
+            <PhotoGrid items={memory.media} t={t} altTitle={memory.title} />
+          </div>
+        ) : (
+          <p className="mt-3 text-soft">{t("media.memoryEmpty")}</p>
+        )}
+      </section>
       <div className="mt-10 flex flex-col gap-3 border-t border-rule pt-6 sm:flex-row">
         <Link href={`/memories/${memory.id}/edit`} className={buttonClass("secondary")}>
           {t("memories.edit")}

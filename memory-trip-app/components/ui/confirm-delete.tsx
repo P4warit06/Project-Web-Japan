@@ -16,6 +16,7 @@ export function ConfirmDelete({
   pendingLabel,
   cancelLabel,
   triggerClassName,
+  extraFields,
 }: {
   action: (formData: FormData) => Promise<void>;
   id: string;
@@ -26,6 +27,8 @@ export function ConfirmDelete({
   pendingLabel: string;
   cancelLabel: string;
   triggerClassName?: string;
+  /** Extra hidden fields posted with the form (e.g. returnTo). */
+  extraFields?: Record<string, string>;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   return (
@@ -51,6 +54,9 @@ export function ConfirmDelete({
         <p className="mt-2 text-soft">{body}</p>
         <form action={action} className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <input type="hidden" name="id" value={id} />
+          {Object.entries(extraFields ?? {}).map(([k, v]) => (
+            <input key={k} type="hidden" name={k} value={v} />
+          ))}
           <button type="button" className={buttonClass("secondary")} onClick={() => ref.current?.close()} autoFocus>
             {cancelLabel}
           </button>

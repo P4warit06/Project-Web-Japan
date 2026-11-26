@@ -1,6 +1,6 @@
 // Prisma schema. Docs: https://pris.ly/d/prisma-schema
-// Dev uses SQLite. Production switches to PostgreSQL (docs/PLAN.md, M9).
-// Keep this file free of SQLite-only features so that switch stays mechanical.
+// PostgreSQL everywhere (local Docker/Postgres or Neon in dev, Neon in production), so one
+// schema and one set of migrations serve dev, tests and production.
 // The database URL lives in prisma.config.ts (Prisma 7), not here.
 
 generator client {
@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model User {
@@ -30,6 +30,7 @@ model CoupleSpace {
   members   CoupleMember[]
   trips     Trip[]
   tags      Tag[]
+  media     MediaAsset[]
 }
 
 model CoupleMember {
@@ -52,11 +53,15 @@ model Trip {
   description   String?
   startDate     DateTime?
   endDate       DateTime?
+  // Cover photo. Cleared automatically when that photo is deleted.
+  coverMediaId  String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   coupleSpace   CoupleSpace   @relation(fields: [coupleSpaceId], references: [id], onDelete: Cascade)
+  cover         MediaAsset?   @relation("TripCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   places        Place[]
   memories      MemoryEntry[]
+  media         MediaAsset[]  @relation("TripMedia")
 
   @@index([coupleSpaceId, startDate])
 }
@@ -87,6 +92,7 @@ model MemoryEntry {
   updatedAt  DateTime @updatedAt
   trip       Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
   tags       Tag[]
+  media      MediaAsset[]
 
   @@index([tripId, happenedAt])
 }
@@ -99,4 +105,30 @@ model Tag {
   memories      MemoryEntry[]
 
   @@unique([coupleSpaceId, name])
+}
+
+// A stored photo. Only metadata lives here; the image bytes live in object storage
+// (lib/storage), addressed by random keys. Never put binary data in the database.
+model MediaAsset {
+  id            String       @id @default(cuid())
+  coupleSpaceId String
+  tripId        String
+  // Optional: the memory this photo illustrates. Deleting the memory keeps the photo on the trip.
+  memoryEntryId String?
+  uploadedById  String
+  storageKey    String       @unique
+  thumbnailKey  String       @unique
+  mimeType      String
+  sizeBytes     Int
+  width         Int
+  height        Int
+  createdAt     DateTime     @default(now())
+  coupleSpace   CoupleSpace  @relation(fields: [coupleSpaceId], references: [id], onDelete: Cascade)
+  trip          Trip         @relation("TripMedia", fields: [tripId], references: [id], onDelete: Cascade)
+  memory        MemoryEntry? @relation(fields: [memoryEntryId], references: [id], onDelete: SetNull)
+  coverFor      Trip[]       @relation("TripCover")
+
+  @@index([coupleSpaceId, createdAt])
+  @@index([tripId, createdAt])
+  @@index([memoryEntryId])
 }

@@ -3,6 +3,7 @@ import type { TripSummary } from "@/features/trips/types";
 import type { TFunction } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
 import { countLabel, formatTripEnds, lineStyle } from "@/components/format";
+import { CoverThumb } from "@/components/media/photo";
 
 /** A trip drawn as a route: start station, line, end station.
  *  Without dates it is a single station. This is the app's signature element. */
@@ -57,9 +58,12 @@ export function TripRouteLink({
   return (
     <Link
       href={`/trips/${trip.id}`}
-      className="-my-2 block rounded-lg py-2 hover:bg-surface-2/60 active:bg-surface-2"
+      className="-my-2 flex items-center gap-4 rounded-lg py-2 hover:bg-surface-2/60 active:bg-surface-2"
     >
-      <TripRouteBody trip={trip} t={t} locale={locale} />
+      <div className="min-w-0 flex-1">
+        <TripRouteBody trip={trip} t={t} locale={locale} />
+      </div>
+      {trip.coverThumbUrl && <CoverThumb url={trip.coverThumbUrl} className="h-20 w-20 rounded-xl" />}
     </Link>
   );
 }

@@ -2,6 +2,8 @@
 import type { Db } from "@/lib/db-client";
 import { PAGE_SIZE, toPage } from "@/features/common/pagination";
 import type { Page } from "@/features/common/types";
+import { mediaSelect, toMediaDTO } from "@/features/media/mapper";
+import { thumbUrl } from "@/features/media/urls";
 import { memorySelect, pruneUnusedTags, toMemoryDTO } from "@/features/memories/core";
 import { placeSelect, toPlaceDTO } from "@/features/places/core";
 import type { TripDetail, TripSummary } from "./types";
@@ -20,6 +22,7 @@ const summarySelect = {
   title: true,
   startDate: true,
   endDate: true,
+  coverMediaId: true,
   _count: { select: { places: true, memories: true } },
 } as const;
 
@@ -28,6 +31,7 @@ type SummaryRow = {
   title: string;
   startDate: Date | null;
   endDate: Date | null;
+  coverMediaId: string | null;
   _count: { places: number; memories: number };
 };
 
@@ -39,6 +43,7 @@ export function toTripSummary(t: SummaryRow): TripSummary {
     endDate: dateOnly(t.endDate),
     placeCount: t._count.places,
     memoryCount: t._count.memories,
+    coverThumbUrl: t.coverMediaId ? thumbUrl(t.coverMediaId) : null,
   };
 }
 
@@ -83,6 +88,11 @@ export async function getTripFor(
         orderBy: [{ happenedAt: "desc" }, { id: "desc" }],
         take: 100,
       },
+      media: {
+        select: mediaSelect,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        take: 200,
+      },
     },
   });
   if (!t) return null;
@@ -91,6 +101,7 @@ export async function getTripFor(
     description: t.description,
     places: t.places.map(toPlaceDTO),
     memories: t.memories.map(toMemoryDTO),
+    media: t.media.map(toMediaDTO),
   };
 }
 

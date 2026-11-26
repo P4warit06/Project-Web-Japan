@@ -18,6 +18,7 @@ Status of repo at planning time: Next.js 16.2.10 + React 19.2 + Tailwind 4 + Pri
 | Language | Thai **and** English | New task 2.0 (i18n); crisis-phrase list in both languages |
 | Users | One couple only (2 people) | Simplifies auth/invites: see "Single-couple mode" below |
 | AI + hosting | You asked for my recommendation, free tier | See "Recommended free stack" below |
+| Database (phase 2) | **PostgreSQL everywhere** (chosen over SQLite-in-dev and Turso) | Replaces the SQLite plan from the handoff. One schema and one migration set for dev, tests and production. Local dev: `docker compose up -d` or a free Neon branch. SQLite-specific notes below (D3, D4) are now historical |
 
 ### Single-couple mode
 Keep the `CoupleSpace` table and keep scoping every query by it (cheap, and it is a second line of defence), but:
@@ -224,13 +225,13 @@ Each task is small enough to finish and verify on its own. **Verify** lines are 
 - **Verify:** create → edit → delete a trip, place and memory in the browser; `npm test` green incl. authorization tests; lint + build pass.
 
 ### M3 — Photos
-- [ ] **3.1** `MediaAsset` model + migration; set `Trip.coverMediaId` relation.
-- [ ] **3.2** `lib/storage`: `StorageProvider` interface (`put/get/delete`) + `LocalStorage` writing to `storage/uploads/<coupleSpaceId>/…` with random keys (never user-supplied filenames → prevents path traversal).
-- [ ] **3.3a** Client-side: before upload, resize to ≤ 2048 px and re-encode as JPEG/WebP via canvas (also drops EXIF; handles HEIC where the browser can decode it). Show progress and per-file errors. This keeps each request well under Vercel's 4.5 MB body limit.
-- [ ] **3.3** `POST /api/media`: require member; enforce **max 4 MB** (matches the host limit) and allowlist `image/jpeg|png|webp`; sniff magic bytes; re-encode with `sharp` (strip EXIF, cap dimensions, make 480px thumbnail); save row. Never trust the client's resize — the server re-checks everything.
-- [ ] **3.4** `GET /api/media/[id]?size=thumb|full`: require member, stream file, `Cache-Control: private`, `X-Content-Type-Options: nosniff`.
-- [ ] **3.5** `DELETE` media (files + row); deleting a trip/memory deletes its files; set/replace trip cover.
-- [ ] **3.6** `/gallery` page (paginated grid with `next/image`, lazy loading) and photo attach UI on memories/trips.
+- [x] **3.1** `MediaAsset` model + migration; set `Trip.coverMediaId` relation.
+- [x] **3.2** `lib/storage`: `StorageProvider` interface (`put/get/delete`) + `LocalStorage` writing to `storage/uploads/<coupleSpaceId>/…` with random keys (never user-supplied filenames → prevents path traversal).
+- [x] **3.3a** Client-side: before upload, resize to ≤ 2048 px and re-encode as JPEG/WebP via canvas (also drops EXIF; handles HEIC where the browser can decode it). Show progress and per-file errors. This keeps each request well under Vercel's 4.5 MB body limit.
+- [x] **3.3** `POST /api/media`: require member; enforce **max 4 MB** (matches the host limit) and allowlist `image/jpeg|png|webp`; sniff magic bytes; re-encode with `sharp` (strip EXIF, cap dimensions, make 480px thumbnail); save row. Never trust the client's resize — the server re-checks everything.
+- [x] **3.4** `GET /api/media/[id]?size=thumb|full`: require member, stream file, `Cache-Control: private`, `X-Content-Type-Options: nosniff`.
+- [x] **3.5** `DELETE` media (files + row); deleting a trip/memory deletes its files; set/replace trip cover.
+- [x] **3.6** `/gallery` page (paginated grid with `next/image`, lazy loading) and photo attach UI on memories/trips.
 - **Verify:** upload JPEG ok; `.exe` renamed `.jpg` rejected; 20 MB file rejected; other couple's `/api/media/<id>` returns 404; exported file has no EXIF; deleting removes the file from disk.
 
 ### M4 — Responsive UI
@@ -273,9 +274,9 @@ You do in [LINE Developers Console](https://developers.line.biz/console/): creat
 - **Verify:** unsigned request → 401; replayed event not processed twice; token never in client bundle (`grep` build output).
 
 ### M9 — Production readiness
-- [ ] **9.0** Create free accounts: Vercel (Hobby), Neon, Cloudflare (R2). Set billing alerts where offered. Add env vars in Vercel (never commit them).
-- [ ] **9.1** Switch to PostgreSQL (Neon): `provider = "postgresql"`, `@prisma/adapter-pg`, re-create migrations; run the test suite against Postgres in CI. Use Neon's pooled connection string for serverless.
-- [ ] **9.2** `R2Storage` (S3-compatible, via `@aws-sdk/client-s3`) implementing `StorageProvider`; keep the authenticated proxy route (`/api/media/[id]`) or use short-lived signed URLs; migrate existing files with a script. Files in the bucket stay **private** (no public bucket/`r2.dev` URL).
+- [ ] **9.0** Create free accounts (guide ready: `docs/DEPLOY.md`): Vercel (Hobby), Neon, Cloudflare (R2). Set billing alerts where offered. Add env vars in Vercel (never commit them).
+- [x] **9.1** Switch to PostgreSQL (Neon) — done in phase 2, migrations are run by hand (`npm run db:deploy`): `provider = "postgresql"`, `@prisma/adapter-pg`, re-create migrations; run the test suite against Postgres in CI. Use Neon's pooled connection string for serverless.
+- [x] **9.2** `R2Storage` (S3-compatible, `@aws-sdk/client-s3`) implementing `StorageProvider`, served through the authenticated `/api/media/[id]` route — code and tests done; still to do: create the real bucket and test against R2. Files in the bucket stay **private** (no public bucket/`r2.dev` URL).
 - [ ] **9.3** `AuditLog` model; log login, delete, export, member changes (no message/photo content).
 - [ ] **9.4** Data export (ZIP of JSON + originals) and "delete my data / delete couple space" with cascading file deletion.
 - [ ] **9.5** Security headers + CSP ([Next CSP guide](https://nextjs.org/docs/app/guides/content-security-policy)), production rate limiting, secure cookies, `npm audit`.

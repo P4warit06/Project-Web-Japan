@@ -21,6 +21,7 @@ export default async function ShellLayout({ children }: { children: React.ReactN
           home: t("nav.home"),
           trips: t("nav.trips"),
           memories: t("nav.memories"),
+          gallery: t("nav.gallery"),
           places: t("nav.places"),
           settings: t("nav.settings"),
         }}

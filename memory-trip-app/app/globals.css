@@ -338,6 +338,15 @@ h3 {
     }
   }
 
+  /* File picker styled as a button; the real input stays focusable. */
+  .pick {
+    position: relative;
+  }
+  .pick:has(input:focus-visible) {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
   /* ---------- Dialog as bottom sheet on phones ---------- */
   dialog.sheet {
     margin: auto auto 0;

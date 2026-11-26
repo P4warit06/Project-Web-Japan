@@ -39,6 +39,13 @@ export const MemoriesIcon = (p: IconProps) => (
     <path d="M9 8h6M9 12h6M9 16h3" />
   </Svg>
 );
+export const GalleryIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <rect x="3.5" y="5" width="17" height="14" rx="2" />
+    <circle cx="9" cy="10" r="1.6" />
+    <path d="m4 17 5-4.5 3.5 3L16 12l4 4.5" />
+  </Svg>
+);
 export const PlacesIcon = (p: IconProps) => (
   <Svg {...p}>
     <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" />

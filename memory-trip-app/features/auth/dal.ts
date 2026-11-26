@@ -4,6 +4,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { isDevLoginAllowed } from "./dev-login";
 import { readSession } from "./session";
 
 export type CurrentUser = { id: string; displayName: string; coupleSpaceId: string };
@@ -37,9 +38,9 @@ export async function requireMember(): Promise<CurrentUser> {
   return user;
 }
 
-/** Dev-only: users the login page may offer. Always [] in production. */
+/** Dev-only: users the login page may offer. [] unless the mock login is allowed (see dev-login.ts). */
 export async function listDevUsers(): Promise<{ id: string; displayName: string }[]> {
-  if (process.env.NODE_ENV === "production") return [];
+  if (!isDevLoginAllowed()) return [];
   const members = await db.coupleMember.findMany({
     select: { user: { select: { id: true, displayName: true } } },
     orderBy: { user: { displayName: "asc" } },

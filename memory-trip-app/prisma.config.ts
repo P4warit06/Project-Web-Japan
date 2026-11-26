@@ -13,6 +13,8 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // Migrations need a DIRECT connection. With Neon, DATABASE_URL is the pooled URL used by
+    // the running app and DIRECT_URL is the non-pooled one. Locally only DATABASE_URL is set.
+    url: process.env["DIRECT_URL"] || process.env["DATABASE_URL"],
   },
 });
