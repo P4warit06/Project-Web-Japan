@@ -5,19 +5,24 @@ import { usePathname } from "next/navigation";
 import {
   BrandMark,
   HomeIcon,
+  GalleryIcon,
   MemoriesIcon,
   PlacesIcon,
   SettingsIcon,
   TripsIcon,
 } from "@/components/ui/icons";
 
-export type TabKey = "home" | "trips" | "memories" | "places" | "settings";
+export type TabKey = "home" | "trips" | "memories" | "gallery" | "places" | "settings";
 
-const TABS: { key: TabKey; href: string; Icon: typeof HomeIcon }[] = [
+// Six destinations do not fit a 360px bar with 44px+ targets and Thai labels, so phones get
+// five tabs: Places is reached from the Trips page (and counts as "Trips" while open).
+// The desktop rail has room for all six.
+const TABS: { key: TabKey; href: string; Icon: typeof HomeIcon; desktopOnly?: boolean; mobileGroup?: string }[] = [
   { key: "home", href: "/", Icon: HomeIcon },
   { key: "trips", href: "/trips", Icon: TripsIcon },
   { key: "memories", href: "/memories", Icon: MemoriesIcon },
-  { key: "places", href: "/places", Icon: PlacesIcon },
+  { key: "gallery", href: "/gallery", Icon: GalleryIcon },
+  { key: "places", href: "/places", Icon: PlacesIcon, desktopOnly: true },
   { key: "settings", href: "/settings", Icon: SettingsIcon },
 ];
 
@@ -43,18 +48,33 @@ export function TabBar({
         {brand}
       </p>
       <ul className="grid grid-cols-5 md:flex md:flex-col md:gap-1">
-        {TABS.map(({ key, href, Icon }) => {
+        {TABS.map(({ key, href, Icon, desktopOnly }) => {
           const active = isActive(href);
+          // On phones Places has no tab of its own: highlight Trips while on /places.
+          const mobileActive = active || (key === "trips" && pathname.startsWith("/places"));
+          if (desktopOnly && !active) {
+            return (
+              <li key={key} className="hidden md:block">
+                <Link
+                  href={href}
+                  className="flex min-h-11 items-center gap-3 rounded-lg px-3 font-medium text-soft hover:text-ink"
+                >
+                  <Icon className="h-6 w-6 shrink-0" />
+                  <span className="truncate">{labels[key]}</span>
+                </Link>
+              </li>
+            );
+          }
           return (
-            <li key={key}>
+            <li key={key} className={desktopOnly ? "hidden md:block" : undefined}>
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={`relative flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-1 text-xs leading-tight font-medium md:min-h-11 md:flex-row md:justify-start md:gap-3 md:rounded-lg md:px-3 md:text-base ${
-                  active ? "text-accent md:bg-surface-2" : "text-soft hover:text-ink"
+                  active ? "text-accent md:bg-surface-2" : mobileActive ? "text-accent md:text-soft md:hover:text-ink" : "text-soft hover:text-ink"
                 }`}
               >
-                {active && (
+                {mobileActive && (
                   <span
                     aria-hidden="true"
                     className="absolute top-0 h-[3px] w-9 rounded-b-full bg-accent md:hidden"

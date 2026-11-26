@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { listTrips } from "@/features/trips/service";
 import { getT } from "@/lib/i18n/server";
 import { LinkButton } from "@/components/ui/button";
@@ -31,7 +32,11 @@ export default async function TripsPage({
             {t("trips.new")}
           </LinkButton>
         }
-      />
+      >
+        <Link href="/places" className="btn btn-ghost -ml-2 mt-1">
+          {t("places.all")}
+        </Link>
+      </PageHeader>
       {page.items.length === 0 ? (
         <EmptyState
           title={t("trips.empty.title")}

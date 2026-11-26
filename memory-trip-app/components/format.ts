@@ -78,7 +78,7 @@ export function lineStyle(tripId: string): React.CSSProperties {
   return { "--line": `var(--line-${tripColorIndex(tripId)})` } as React.CSSProperties;
 }
 
-type CountKind = "trips" | "places" | "memories";
+type CountKind = "trips" | "places" | "memories" | "photos";
 
 /** "1 trip" / "3 trips" using Intl.PluralRules so both languages stay correct. */
 export function countLabel(t: TFunction, locale: Locale, kind: CountKind, n: number): string {

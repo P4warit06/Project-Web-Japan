@@ -24,7 +24,7 @@ export function Pager({
         </Link>
       )}
       {nextCursor && (
-        <Link href={`${basePath}?cursor=${encodeURIComponent(nextCursor)}`} className={buttonClass("secondary")}>
+        <Link href={`${basePath}${basePath.includes("?") ? "&" : "?"}cursor=${encodeURIComponent(nextCursor)}`} className={buttonClass("secondary")}>
           {moreLabel}
         </Link>
       )}

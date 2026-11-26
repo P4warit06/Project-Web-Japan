@@ -5,6 +5,9 @@ import { deleteTripAction } from "@/features/trips/actions";
 import { getTrip } from "@/features/trips/service";
 import { getT } from "@/lib/i18n/server";
 import { BackLink } from "@/components/ui/back-link";
+import { lineStyle } from "@/components/format";
+import { Photo, PhotoGrid } from "@/components/media/photo";
+import { PhotoUploader } from "@/components/media/photo-uploader";
 import { LinkButton, buttonClass } from "@/components/ui/button";
 import { ConfirmDelete } from "@/components/ui/confirm-delete";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -26,10 +29,30 @@ export default async function TripPage({ params }: Props) {
   const [{ t, locale }, trip] = await Promise.all([getT(), getTrip(tripId)]);
   if (!trip) notFound();
 
+  const cover = trip.coverThumbUrl ? trip.media.find((m) => m.thumbUrl === trip.coverThumbUrl) : undefined;
+  const GRID_LIMIT = 9;
+
   return (
     <div className="draw flex flex-col gap-10">
       <div>
         <BackLink href="/trips" label={t("nav.trips")} />
+        {trip.coverThumbUrl && (
+          // The line leaves the photo: a bar in the trip colour sits under the cover
+          // and the route below picks it up.
+          <div
+            className="mb-5 aspect-[16/10] overflow-hidden rounded-[var(--radius-sheet)] border-b-[5px] border-[var(--line)] bg-surface-2"
+            style={lineStyle(trip.id)}
+          >
+            <Photo
+              media={
+                cover ?? { thumbUrl: trip.coverThumbUrl, fullUrl: trip.coverThumbUrl, width: 480, height: 300 }
+              }
+              variant="full"
+              priority
+              alt={t("media.coverAlt", { title: trip.title })}
+            />
+          </div>
+        )}
         <TripRouteBody trip={trip} t={t} locale={locale} headingLevel={1} showDescription />
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <LinkButton href={`/memories/new?trip=${encodeURIComponent(trip.id)}`}>
@@ -42,6 +65,35 @@ export default async function TripPage({ params }: Props) {
           </LinkButton>
         </div>
       </div>
+
+      <section aria-labelledby="trip-photos">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 id="trip-photos" className="text-lg font-semibold">
+            {t("media.title")}
+          </h2>
+          {trip.media.length > GRID_LIMIT && (
+            <Link
+              href={`/gallery?trip=${encodeURIComponent(trip.id)}`}
+              className="-mr-2 inline-flex min-h-11 items-center px-2 text-accent underline underline-offset-2"
+            >
+              {t("media.viewAll")}
+            </Link>
+          )}
+        </div>
+        <PhotoUploader tripId={trip.id} />
+        {trip.media.length > 0 ? (
+          <div className="mt-4">
+            <PhotoGrid
+              items={trip.media.slice(0, GRID_LIMIT)}
+              t={t}
+              altTitle={trip.title}
+              coverThumbUrl={trip.coverThumbUrl}
+            />
+          </div>
+        ) : (
+          <p className="mt-3 text-soft">{t("media.empty")}</p>
+        )}
+      </section>
 
       <section aria-labelledby="trip-places">
         <h2 id="trip-places" className="mb-3 text-lg font-semibold">

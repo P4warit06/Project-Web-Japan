@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { MemoryDTO } from "@/features/memories/types";
 import type { TFunction } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
+import { Photo } from "@/components/media/photo";
 import { formatDateTime, formatMonth, lineStyle, monthKey } from "@/components/format";
 
 type StopStyle = React.CSSProperties & { "--i"?: number };
@@ -43,6 +44,29 @@ function Stop({
       >
         {memory.content}
       </p>
+      {memory.media.length > 0 && (
+        <ul className="relative z-10 mt-2 flex gap-1.5">
+          {memory.media.slice(0, 3).map((m, i) => {
+            const rest = memory.media.length - 3;
+            const last = i === 2 && rest > 0;
+            return (
+              <li key={m.id} className="relative h-[4.5rem] w-[4.5rem] overflow-hidden rounded-lg bg-surface-2">
+                <Link href={last ? `/memories/${memory.id}` : `/gallery/${m.id}`} className="block h-full w-full">
+                  <Photo media={m} alt={t("media.alt", { title: memory.title, n: i + 1 })} />
+                  {last && (
+                    <span
+                      className="absolute inset-0 flex items-center justify-center bg-ink/60 font-semibold text-paper"
+                      aria-label={t("media.moreLabel", { count: rest })}
+                    >
+                      +{rest}
+                    </span>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
       {(memory.mood || memory.tags.length > 0 || showTrip) && (
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.9375rem]">
           {memory.mood && (
