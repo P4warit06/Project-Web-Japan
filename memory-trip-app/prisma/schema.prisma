@@ -1,7 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Prisma schema. Docs: https://pris.ly/d/prisma-schema
+// Dev uses SQLite. Production switches to PostgreSQL (docs/PLAN.md, M9).
+// Keep this file free of SQLite-only features so that switch stays mechanical.
+// The database URL lives in prisma.config.ts (Prisma 7), not here.
 
 generator client {
   provider = "prisma-client"
@@ -9,5 +9,94 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
+}
+
+model User {
+  id          String         @id @default(cuid())
+  // Set when the user logs in through LINE (M7). Null for local/mock users.
+  lineUserId  String?        @unique
+  displayName String
+  avatarUrl   String?
+  createdAt   DateTime       @default(now())
+  memberships CoupleMember[]
+}
+
+model CoupleSpace {
+  id        String         @id @default(cuid())
+  name      String
+  ownerId   String
+  createdAt DateTime       @default(now())
+  members   CoupleMember[]
+  trips     Trip[]
+  tags      Tag[]
+}
+
+model CoupleMember {
+  id            String      @id @default(cuid())
+  coupleSpaceId String
+  userId        String
+  // "owner" | "partner". Validated with zod in the service layer.
+  role          String
+  coupleSpace   CoupleSpace @relation(fields: [coupleSpaceId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([coupleSpaceId, userId])
+  @@index([userId])
+}
+
+model Trip {
+  id            String        @id @default(cuid())
+  coupleSpaceId String
+  title         String
+  description   String?
+  startDate     DateTime?
+  endDate       DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  coupleSpace   CoupleSpace   @relation(fields: [coupleSpaceId], references: [id], onDelete: Cascade)
+  places        Place[]
+  memories      MemoryEntry[]
+
+  @@index([coupleSpaceId, startDate])
+}
+
+model Place {
+  id        String   @id @default(cuid())
+  tripId    String
+  name      String
+  latitude  Float?
+  longitude Float?
+  address   String?
+  note      String?
+  createdAt DateTime @default(now())
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+}
+
+model MemoryEntry {
+  id         String   @id @default(cuid())
+  tripId     String
+  title      String
+  content    String
+  happenedAt DateTime
+  // "happy" | "calm" | "excited" | "tired" | "sad". Validated with zod.
+  mood       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  trip       Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tags       Tag[]
+
+  @@index([tripId, happenedAt])
+}
+
+model Tag {
+  id            String        @id @default(cuid())
+  coupleSpaceId String
+  name          String
+  coupleSpace   CoupleSpace   @relation(fields: [coupleSpaceId], references: [id], onDelete: Cascade)
+  memories      MemoryEntry[]
+
+  @@unique([coupleSpaceId, name])
 }

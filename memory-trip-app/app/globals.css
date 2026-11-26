@@ -1,26 +1,380 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------
+   Memory Trip tokens. Light is default; dark follows the system.
+   "Line" colours are for graphics only (rails, rings), one per trip.
+------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --paper: #f3f3f8;
+  --surface: #ffffff;
+  --surface-2: #e8e9f3;
+  --ink: #172036;
+  --soft: #566080;
+  --rule: #d3d6e5;
+  --accent: #2b4590;
+  --on-accent: #ffffff;
+  --danger: #b3261e;
+  --on-danger: #ffffff;
+  --focus: #2b4590;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --line-0: #2b4590;
+  --line-1: #c4501b;
+  --line-2: #4f7d3a;
+  --line-3: #b8456c;
+  --line-4: #1f7a8c;
+  --line-5: #a87500;
+
+  --radius-control: 0.75rem;
+  --radius-sheet: 1.25rem;
+  --tab-h: 3.75rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #10142a;
+    --surface: #1a2040;
+    --surface-2: #252c55;
+    --ink: #e9ecf7;
+    --soft: #a9b1cc;
+    --rule: #2f3862;
+    --accent: #9db2f5;
+    --on-accent: #10142a;
+    --danger: #ff8a80;
+    --on-danger: #2a0a08;
+    --focus: #9db2f5;
+
+    --line-0: #8da4f2;
+    --line-1: #f08a5d;
+    --line-2: #8cc070;
+    --line-3: #ee87a8;
+    --line-4: #5dc0d3;
+    --line-5: #e3b341;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-soft: var(--soft);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-on-danger: var(--on-danger);
+
+  --font-sans: var(--font-ui), system-ui, sans-serif;
+  --font-serif: var(--font-voice), "Noto Serif Thai", serif;
+
+  --text-body: 1rem;
+  --radius-control: var(--radius-control);
+  --radius-sheet: var(--radius-sheet);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  /* Thai stacks vowel and tone marks: needs air. */
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.4;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+@layer components {
+  /* The couple's own words: titles and memory text. */
+  .voice {
+    font-family: var(--font-serif);
+  }
+  .user-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* ---------- Buttons: 44px+ touch targets ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.875rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-control);
+    border: 1.5px solid transparent;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
+  }
+  .btn[disabled],
+  .btn[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--accent) 88%, var(--ink));
+  }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--rule);
+  }
+  .btn-secondary:hover {
+    border-color: var(--soft);
+  }
+  .btn-danger {
+    background: var(--danger);
+    color: var(--on-danger);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    padding-inline: 0.5rem;
+  }
+  .btn-ghost:hover {
+    background: var(--surface-2);
+  }
+  .btn-quiet-danger {
+    background: transparent;
+    color: var(--danger);
+    border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  }
+  .btn-quiet-danger:hover {
+    background: color-mix(in srgb, var(--danger) 10%, transparent);
+  }
+
+  /* ---------- Form controls ---------- */
+  .control {
+    display: block;
+    width: 100%;
+    min-height: 2.875rem;
+    padding: 0.5rem 0.875rem;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1.5px solid var(--rule);
+    border-radius: var(--radius-control);
+    font: inherit;
+    line-height: 1.6;
+  }
+  textarea.control {
+    min-height: 8rem;
+    resize: vertical;
+  }
+  .control:hover {
+    border-color: var(--soft);
+  }
+  .control[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+  .control::placeholder {
+    color: var(--soft);
+    opacity: 0.8;
+  }
+
+  /* Choice chips (mood, language, dev user). Radio is visually hidden but focusable. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.25rem 1rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--rule);
+    background: var(--surface);
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .chip-input:checked + .chip,
+  .chip[aria-current="true"] {
+    background: var(--accent);
+    color: var(--on-accent);
+    border-color: var(--accent);
+  }
+  .chip-input:focus-visible + .chip {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* ---------- The rail: the one memorable element ----------
+     A trip is a line between two stations. Memories are stops on it.
+     --line: ring colour (from trip). --seg: colour of the segment below the stop. */
+  .rail {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .stop {
+    position: relative;
+    padding-left: 2.75rem;
+    padding-bottom: 1.75rem;
+    --seg: var(--line, var(--ink));
+  }
+  .stop::before {
+    /* the station ring: hollow, thick coloured outline */
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    box-sizing: border-box;
+    border-radius: 999px;
+    border: 5px solid var(--line, var(--ink));
+    background: var(--paper);
+    z-index: 1;
+  }
+  .stop::after {
+    /* the segment down to the next stop */
+    content: "";
+    position: absolute;
+    left: calc(0.75rem - 3px);
+    width: 6px;
+    top: 1.05rem;
+    bottom: -1.05rem;
+    background: var(--seg);
+    border-radius: 3px;
+    transform-origin: top;
+  }
+  .stop:last-child {
+    padding-bottom: 0;
+  }
+  .stop:last-child::after {
+    display: none;
+  }
+  .stop-month {
+    position: relative;
+    padding-left: 2.75rem;
+    padding-bottom: 0.75rem;
+    --seg: var(--rule);
+  }
+  .stop-month::after {
+    content: "";
+    position: absolute;
+    left: calc(0.75rem - 3px);
+    width: 6px;
+    top: 0;
+    bottom: -1.05rem;
+    background: var(--seg);
+    border-radius: 3px;
+  }
+  /* neutral rail for cross-trip timelines: segments quiet, rings keep trip colour */
+  .rail-neutral .stop {
+    --seg: var(--rule);
+  }
+
+  /* A trip: two stations (start, end) joined by a line. */
+  .route {
+    position: relative;
+    padding-left: 2.75rem;
+    --seg: var(--line, var(--ink));
+  }
+  .route::before {
+    content: "";
+    position: absolute;
+    left: calc(0.75rem - 3px);
+    width: 6px;
+    top: 0.9rem;
+    bottom: 0.9rem;
+    background: var(--seg);
+    border-radius: 3px;
+    transform-origin: top;
+  }
+  .route-ring {
+    position: absolute;
+    left: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    box-sizing: border-box;
+    border-radius: 999px;
+    border: 5px solid var(--line, var(--ink));
+    background: var(--paper);
+  }
+  .route-ring-start {
+    top: 0.15rem;
+  }
+  .route-ring-end {
+    bottom: 0.15rem;
+  }
+  .route-single::before {
+    display: none;
+  }
+
+  /* One orchestrated moment: the line draws itself on the trip page. */
+  @media (prefers-reduced-motion: no-preference) {
+    .draw .route::before,
+    .draw .stop::after {
+      animation: draw 0.7s cubic-bezier(0.22, 0.8, 0.3, 1) both;
+      animation-delay: calc(var(--i, 0) * 70ms);
+    }
+    .skeleton {
+      animation: breathe 1.6s ease-in-out infinite;
+    }
+  }
+
+  /* ---------- Dialog as bottom sheet on phones ---------- */
+  dialog.sheet {
+    margin: auto auto 0;
+    width: 100%;
+    max-width: 28rem;
+    padding: 1.5rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  dialog.sheet::backdrop {
+    background: rgb(10 14 30 / 0.55);
+  }
+  @media (min-width: 768px) {
+    dialog.sheet {
+      margin: auto;
+      border-radius: var(--radius-sheet);
+      padding-bottom: 1.5rem;
+    }
+  }
+}
+
+@keyframes draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
 }
