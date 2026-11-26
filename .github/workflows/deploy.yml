@@ -1,0 +1,97 @@
+# Deploys memory-trip-app to Vercel from GitHub Actions.
+#  - Pull request          -> Preview deployment (only for branches of this repository)
+#  - Run manually (button) -> Preview or Production deployment
+# Production is manual on purpose: until LINE login exists (milestone M7) nobody can sign in there.
+# One-time setup (secrets, project name): docs/DEPLOY.md, section "Deploy with GitHub Actions".
+name: Deploy to Vercel
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Where to deploy
+        type: choice
+        options: [preview, production]
+        default: preview
+
+permissions:
+  contents: read
+
+# A newer push cancels a running preview deploy for the same branch; production runs never overlap.
+concurrency:
+  group: deploy-${{ github.event_name }}-${{ inputs.environment || github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  checks:
+    # Pull requests from forks get no secrets and must not deploy.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # "production" can be given required reviewers in GitHub: Settings > Environments.
+    environment: ${{ inputs.environment == 'production' && 'production' || 'preview' }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TARGET: ${{ inputs.environment == 'production' && 'production' || 'preview' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that the Vercel secrets exist
+        id: guard
+        run: |
+          missing=""
+          for name in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            if [ -z "${!name}" ]; then missing="$missing $name"; fi
+          done
+          if [ -n "$missing" ]; then
+            if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+              echo "::error::Missing secrets:$missing (see docs/DEPLOY.md, Deploy with GitHub Actions)"
+              exit 1
+            fi
+            # On pull requests a missing secret just means "not set up yet": skip, do not fail.
+            echo "::notice::Deploy skipped, secrets not configured yet:$missing (see docs/DEPLOY.md)"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+
+      # Pinned version: a new major release of the CLI cannot change the deploy behind your back.
+      - if: steps.guard.outputs.enabled == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - if: steps.guard.outputs.enabled == 'true'
+        run: npm install --global vercel@66.6.0
+
+      # Run from the repository root. The project's "Root Directory" setting (memory-trip-app)
+      # tells Vercel where the app lives. Environment variables come from the Vercel project.
+      - name: Pull Vercel settings and environment variables
+        if: steps.guard.outputs.enabled == 'true'
+        run: vercel pull --yes --environment="$TARGET" --token="$VERCEL_TOKEN"
+
+      - name: Build
+        if: steps.guard.outputs.enabled == 'true'
+        run: |
+          if [ "$TARGET" = "production" ]; then vercel build --prod --token="$VERCEL_TOKEN"
+          else vercel build --token="$VERCEL_TOKEN"; fi
+
+      - name: Deploy
+        id: deploy
+        if: steps.guard.outputs.enabled == 'true'
+        run: |
+          if [ "$TARGET" = "production" ]; then url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          else url=$(vercel deploy --prebuilt --token="$VERCEL_TOKEN"); fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Deployed ($TARGET)"
+            echo "$url"
+          } >> "$GITHUB_STEP_SUMMARY"
