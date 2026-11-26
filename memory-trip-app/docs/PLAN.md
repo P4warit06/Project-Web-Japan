@@ -227,11 +227,11 @@ Each task is small enough to finish and verify on its own. **Verify** lines are 
 ### M3 — Photos
 - [x] **3.1** `MediaAsset` model + migration; set `Trip.coverMediaId` relation.
 - [x] **3.2** `lib/storage`: `StorageProvider` interface (`put/get/delete`) + `LocalStorage` writing to `storage/uploads/<coupleSpaceId>/…` with random keys (never user-supplied filenames → prevents path traversal).
-- [ ] **3.3a** Client-side: before upload, resize to ≤ 2048 px and re-encode as JPEG/WebP via canvas (also drops EXIF; handles HEIC where the browser can decode it). Show progress and per-file errors. This keeps each request well under Vercel's 4.5 MB body limit.
+- [x] **3.3a** Client-side: before upload, resize to ≤ 2048 px and re-encode as JPEG/WebP via canvas (also drops EXIF; handles HEIC where the browser can decode it). Show progress and per-file errors. This keeps each request well under Vercel's 4.5 MB body limit.
 - [x] **3.3** `POST /api/media`: require member; enforce **max 4 MB** (matches the host limit) and allowlist `image/jpeg|png|webp`; sniff magic bytes; re-encode with `sharp` (strip EXIF, cap dimensions, make 480px thumbnail); save row. Never trust the client's resize — the server re-checks everything.
 - [x] **3.4** `GET /api/media/[id]?size=thumb|full`: require member, stream file, `Cache-Control: private`, `X-Content-Type-Options: nosniff`.
 - [x] **3.5** `DELETE` media (files + row); deleting a trip/memory deletes its files; set/replace trip cover.
-- [ ] **3.6** `/gallery` page (paginated grid with `next/image`, lazy loading) and photo attach UI on memories/trips.
+- [x] **3.6** `/gallery` page (paginated grid with `next/image`, lazy loading) and photo attach UI on memories/trips.
 - **Verify:** upload JPEG ok; `.exe` renamed `.jpg` rejected; 20 MB file rejected; other couple's `/api/media/<id>` returns 404; exported file has no EXIF; deleting removes the file from disk.
 
 ### M4 — Responsive UI
