@@ -8,7 +8,7 @@ export async function getDashboardFor(db: Db, coupleSpaceId: string): Promise<Da
     db.trip.findMany({
       where: { coupleSpaceId },
       select: {
-        id: true, title: true, startDate: true, endDate: true,
+        id: true, title: true, startDate: true, endDate: true, coverMediaId: true,
         _count: { select: { places: true, memories: true } },
       },
       orderBy: [{ startDate: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }, { id: "desc" }],

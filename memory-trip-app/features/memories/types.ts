@@ -1,3 +1,5 @@
+import type { MediaDTO } from "@/features/media/types";
+
 export const MOODS = ["happy", "calm", "excited", "tired", "sad"] as const;
 export type Mood = (typeof MOODS)[number];
 
@@ -10,4 +12,6 @@ export type MemoryDTO = {
   happenedAt: string; // ISO datetime
   mood: Mood | null;
   tags: string[];
+  /** Photos attached to this memory, oldest first. */
+  media: MediaDTO[];
 };

@@ -1,7 +1,9 @@
 // Memory data logic (see places/core.ts for the design notes).
+import type { Prisma } from "@/app/generated/prisma/client";
 import type { Db } from "@/lib/db-client";
 import { PAGE_SIZE, toPage } from "@/features/common/pagination";
 import type { Page } from "@/features/common/types";
+import { mediaSelect, toMediaDTO } from "@/features/media/mapper";
 import { MOODS, type MemoryDTO, type Mood } from "./types";
 
 export type MemoryInput = {
@@ -27,6 +29,8 @@ export function normalizeTags(raw: string): string[] | null {
   return seen.size > MAX_TAGS ? null : [...seen];
 }
 
+const mediaOrder = [{ createdAt: "asc" }, { id: "asc" }] satisfies Prisma.MediaAssetOrderByWithRelationInput[];
+
 export const memorySelect = {
   id: true,
   tripId: true,
@@ -36,6 +40,7 @@ export const memorySelect = {
   mood: true,
   trip: { select: { title: true } },
   tags: { select: { name: true }, orderBy: { name: "asc" } },
+  media: { select: mediaSelect, orderBy: mediaOrder },
 } as const;
 
 type MemoryRow = {
@@ -47,6 +52,7 @@ type MemoryRow = {
   mood: string | null;
   trip: { title: string };
   tags: { name: string }[];
+  media: Parameters<typeof toMediaDTO>[0][];
 };
 
 export function toMemoryDTO(m: MemoryRow): MemoryDTO {
@@ -59,6 +65,7 @@ export function toMemoryDTO(m: MemoryRow): MemoryDTO {
     happenedAt: m.happenedAt.toISOString(),
     mood: (MOODS as readonly string[]).includes(m.mood ?? "") ? (m.mood as Mood) : null,
     tags: m.tags.map((t) => t.name),
+    media: m.media.map(toMediaDTO),
   };
 }
 
