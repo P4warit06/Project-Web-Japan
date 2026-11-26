@@ -1,0 +1,18 @@
+# Local PostgreSQL for development and tests:  docker compose up -d
+# Creates two databases: memory_trip (dev) and memory_trip_test (the test suite wipes it).
+# These credentials are for your own machine only. Never reuse them anywhere else.
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: memorytrip
+      POSTGRES_PASSWORD: memorytrip
+      POSTGRES_DB: memory_trip
+    ports:
+      - "127.0.0.1:5432:5432" # only reachable from this computer
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+volumes:
+  pgdata:

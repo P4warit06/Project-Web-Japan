@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Memory Trip
 
-## Getting Started
+A private web app for one couple to keep trip memories: trips, places, written memories and photos, with a companion chatbot planned. Thai and English. Built to run inside the LINE in-app browser.
 
-First, run the development server:
+Requirements and plan: [`CLAUDE_HANDOFF.md`](./CLAUDE_HANDOFF.md) (original brief), [`docs/PLAN.md`](./docs/PLAN.md) (milestones). Deploying: [`docs/DEPLOY.md`](./docs/DEPLOY.md).
+
+## Stack
+
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Prisma 7 + PostgreSQL · sharp · Vitest.
+Free hosting target: Vercel + Neon + Cloudflare R2.
+
+> This Next.js version has breaking changes. Before writing code, read the guides in `node_modules/next/dist/docs/` (see `AGENTS.md`).
+
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up -d          # local PostgreSQL (dev + test databases)
+cp .env.example .env.local    # set SESSION_SECRET: openssl rand -base64 32
+npm ci
+npm run db:migrate            # create tables
+npm run db:seed               # demo users Alex and Sam
+npm run dev                   # http://localhost:3000 (log in as a demo user)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Commands
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | What it does |
+|---|---|
+| `npm run dev` / `build` / `start` | Next.js dev server / production build / run the build |
+| `npm run lint` / `typecheck` | ESLint / TypeScript |
+| `npm test` | Vitest on the PostgreSQL **test** database (it wipes its tables) |
+| `npm run db:migrate` | Create/apply migrations in development |
+| `npm run db:deploy` | Apply existing migrations (production/preview, run by hand) |
+| `npm run db:seed` | Insert demo users (refuses to run in production) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Layout
 
-## Learn More
+```
+app/            pages and API routes (route group (liff) = signed-in area)
+components/     UI (ui, shell, trip, place, memory, media)
+features/       business logic per feature: core.ts (database), schema.ts (validation),
+                actions.ts (Server Actions), service.ts (reads for pages)
+lib/            db, i18n, storage (local / R2), security helpers
+prisma/         schema and migrations
+tests/          Vitest suites (isolation between couples, uploads, forms)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Security rules of this codebase
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Every page, action and API route calls `requireMember()` (`features/auth/dal.ts`); the couple space always comes from the session, never from user input.
+- All input is validated on the server with zod; error messages are i18n keys.
+- Photos are re-encoded (EXIF/GPS removed), stored with random keys outside `public/`, and served only through `/api/media/[id]` after a membership check.
+- Secrets live in environment variables only (`.env.local` is git-ignored).
