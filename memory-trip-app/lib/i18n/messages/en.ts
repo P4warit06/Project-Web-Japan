@@ -156,6 +156,7 @@ export const en = {
   "media.progress": "Uploading {done} of {total}",
   "media.added.one": "{count} photo added",
   "media.added.other": "{count} photos added",
+  "media.dismiss": "Dismiss",
   "media.retry": "Try again",
   "media.empty": "No photos in this trip yet.",
   "media.memoryEmpty": "No photos with this memory yet.",

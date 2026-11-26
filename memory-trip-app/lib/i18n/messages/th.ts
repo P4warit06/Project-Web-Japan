@@ -156,6 +156,7 @@ export const th: Record<MessageKey, string> = {
   "media.progress": "กำลังอัปโหลด {done} จาก {total}",
   "media.added.one": "เพิ่มรูปแล้ว {count} รูป",
   "media.added.other": "เพิ่มรูปแล้ว {count} รูป",
+  "media.dismiss": "ปิด",
   "media.retry": "ลองอีกครั้ง",
   "media.empty": "ทริปนี้ยังไม่มีรูปภาพ",
   "media.memoryEmpty": "ความทรงจำนี้ยังไม่มีรูป",

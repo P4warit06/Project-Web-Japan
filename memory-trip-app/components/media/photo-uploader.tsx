@@ -116,6 +116,11 @@ export function PhotoUploader({ tripId, memoryId }: { tripId: string; memoryId?:
     void run([id]);
   };
 
+  const dismiss = (id: number) => {
+    files.current.delete(id);
+    setItems((prev) => prev.filter((it) => it.id !== id));
+  };
+
   const total = items.length;
   const done = items.filter((i) => i.status === "done").length;
   const failed = items.filter((i) => i.status === "failed");
@@ -169,15 +174,17 @@ export function PhotoUploader({ tripId, memoryId }: { tripId: string; memoryId?:
                           : t("media.status.queued")}
                   </p>
                 </div>
-                {it.status === "failed" && !NOT_RETRYABLE.has(it.error ?? "") && (
-                  <button
-                    type="button"
-                    className="btn btn-ghost !min-h-11"
-                    onClick={() => retry(it.id)}
-                    disabled={busy}
-                  >
-                    {t("media.retry")}
-                  </button>
+                {it.status === "failed" && (
+                  <div className="flex shrink-0 gap-1">
+                    {!NOT_RETRYABLE.has(it.error ?? "") && (
+                      <button type="button" className="btn btn-ghost !min-h-11" onClick={() => retry(it.id)} disabled={busy}>
+                        {t("media.retry")}
+                      </button>
+                    )}
+                    <button type="button" className="btn btn-ghost !min-h-11 !text-soft" onClick={() => dismiss(it.id)}>
+                      {t("media.dismiss")}
+                    </button>
+                  </div>
                 )}
               </li>
             ))}

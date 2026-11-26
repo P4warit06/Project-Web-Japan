@@ -33,7 +33,7 @@ export default async function PhotoPage({ params }: Props) {
     <article>
       <BackLink href="/gallery" label={t("nav.gallery")} />
       <div
-        className="mx-auto max-h-[75dvh] overflow-hidden rounded-[var(--radius-control)] border-b-[5px] border-[var(--line)] bg-surface-2"
+        className="mx-auto mb-2 max-h-[75dvh] overflow-hidden rounded-[var(--radius-control)] bg-surface-2 shadow-[0_5px_0_0_var(--line)]"
         style={{ ...lineStyle(media.tripId), aspectRatio: `${media.width} / ${media.height}` }}
       >
         <Photo
