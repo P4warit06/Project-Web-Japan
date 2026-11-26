@@ -5,6 +5,7 @@ let client: Db | undefined;
 export function testDb(): Db {
   const url = process.env.TEST_DATABASE_URL;
   if (!url) throw new Error("TEST_DATABASE_URL missing: global setup did not run");
+  if (!/test/i.test(new URL(url).pathname)) throw new Error("Refusing to use a non-test database in tests");
   return (client ??= createPrismaClient(url));
 }
 

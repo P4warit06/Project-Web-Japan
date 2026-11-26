@@ -1,6 +1,6 @@
 // Prisma schema. Docs: https://pris.ly/d/prisma-schema
-// Dev uses SQLite. Production switches to PostgreSQL (docs/PLAN.md, M9).
-// Keep this file free of SQLite-only features so that switch stays mechanical.
+// PostgreSQL everywhere (local Docker/Postgres or Neon in dev, Neon in production), so one
+// schema and one set of migrations serve dev, tests and production.
 // The database URL lives in prisma.config.ts (Prisma 7), not here.
 
 generator client {
@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model User {
