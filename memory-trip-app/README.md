@@ -2,7 +2,7 @@
 
 A private web app for one couple to keep trip memories: trips, places, written memories and photos, with a companion chatbot planned. Thai and English. Built to run inside the LINE in-app browser.
 
-Requirements and plan: [`CLAUDE_HANDOFF.md`](./CLAUDE_HANDOFF.md) (original brief), [`docs/PLAN.md`](./docs/PLAN.md) (milestones). Deploying: [`docs/DEPLOY.md`](./docs/DEPLOY.md).
+Requirements and plan: [`CLAUDE_HANDOFF.md`](./CLAUDE_HANDOFF.md) (original brief), [`docs/PLAN.md`](./docs/PLAN.md) (milestones). Deploying: [`docs/DEPLOY.md`](./docs/DEPLOY.md). Clickable UI demo (GitHub Pages): [`docs/DEMO.md`](./docs/DEMO.md).
 
 ## Stack
 
@@ -32,6 +32,7 @@ npm run dev                   # http://localhost:3000 (log in as a demo user)
 | `npm run db:migrate` | Create/apply migrations in development |
 | `npm run db:deploy` | Apply existing migrations (production/preview, run by hand) |
 | `npm run db:seed` | Insert demo users (refuses to run in production) |
+| `npm run demo:dev` / `demo:build` | Static UI demo with sample data (GitHub Pages, see docs/DEMO.md) |
 
 ## Layout
 

@@ -18,7 +18,7 @@ export default async function LoginPage() {
       <BrandMark className="mb-5 h-10 w-auto text-accent" />
       <h1 className="voice mb-2 text-[2rem] leading-[1.3] font-semibold">{t("app.name")}</h1>
       <p className="mb-8 text-soft">{t("login.tagline")}</p>
-      <p className="mb-6 rounded-[var(--radius-control)] bg-surface-2 px-4 py-3 text-[0.9375rem]">
+      <p className="note mb-6">
         {t("login.devNotice")}
       </p>
       {users.length > 0 ? (

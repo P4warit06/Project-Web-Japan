@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- GitHub Pages cannot send headers, so the policy is a meta tag. Only own files, own
+         inline style attributes, and data: images (the sample and uploaded photos). -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f3f3f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#10142a" media="(prefers-color-scheme: dark)" />
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Memory Trip: demo (sample data, runs in your browser)" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <title>Memory Trip (demo)</title>
+  </head>
+  <body class="min-h-full font-sans">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

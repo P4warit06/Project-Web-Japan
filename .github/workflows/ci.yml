@@ -47,3 +47,5 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      # The GitHub Pages demo reuses the app's components; this fails if a change breaks it.
+      - run: npm run demo:build

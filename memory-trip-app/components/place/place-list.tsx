@@ -31,7 +31,7 @@ export function PlaceList({
             </div>
             <Link
               href={`/trips/${p.tripId}/places/${p.id}/edit`}
-              className="-mt-1 -mr-2 inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 text-accent hover:bg-surface-2"
+              className="-mt-1 -mr-2 inline-flex min-h-11 shrink-0 items-center rounded px-3 text-accent hover:bg-surface-2"
               aria-label={`${t("common.edit")}: ${p.name}`}
             >
               {t("common.edit")}

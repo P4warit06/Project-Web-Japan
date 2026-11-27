@@ -1,0 +1,61 @@
+# Publishes the static DEMO of the UI to GitHub Pages: sample data, no server, no database.
+# It is not the real app (that runs on Vercel, see deploy.yml). Guide: memory-trip-app/docs/DEMO.md
+#
+# One-time setup (repository owner, in the GitHub web UI):
+#   1. Settings > Pages > Build and deployment > Source: "GitHub Actions"
+#   2. Settings > Environments > github-pages > Deployment branches: allow "phase3" (and "main")
+name: Demo on GitHub Pages
+
+on:
+  push:
+    branches: [phase3]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deployment at a time; a newer push replaces a running one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: memory-trip-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: memory-trip-app/package-lock.json
+      - run: npm ci
+      # GitHub serves a project site under /<repository-name>/
+      - run: npm run demo:build
+        env:
+          DEMO_BASE: /${{ github.event.repository.name }}/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: memory-trip-app/dist-demo
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write # publish to Pages
+      id-token: write # prove to Pages that this workflow made the files
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
