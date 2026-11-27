@@ -1,0 +1,17 @@
+/* Same design tokens and components as the real app. Fonts are imported in main.tsx. */
+@import "../../app/globals.css";
+
+:root {
+  --font-ui: "IBM Plex Sans Thai";
+  --font-voice: "Maitree";
+}
+
+html {
+  height: 100%;
+}
+/* <main> receives focus after each navigation (for screen readers); it is not interactive,
+   so it must not draw the focus ring. This rule is unlayered, so it beats the global
+   :focus-visible rule. */
+#main:focus {
+  outline: none;
+}
