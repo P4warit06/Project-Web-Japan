@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { m, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
 import { BrushEdge, Cursor } from "@/components/art/doodles";
 import { rng } from "@/components/art/sketch";
 import { useLocale } from "@/components/i18n/locale-provider";
@@ -99,14 +100,39 @@ export function Hero({
   }, [chars]);
   const shown = typed ?? chars.length;
 
+  // The two cursors lean toward the pointer, one the other way, like two people in the same
+  // document. Springs keep them soft. Skipped when the system asks for reduced motion.
+  const reduce = useReducedMotion();
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const sx = useSpring(px, { stiffness: 70, damping: 16 });
+  const sy = useSpring(py, { stiffness: 70, damping: 16 });
+  const ax = useTransform(sx, [-0.5, 0.5], [34, -34]);
+  const ay = useTransform(sy, [-0.5, 0.5], [24, -24]);
+  const bx = useTransform(sx, [-0.5, 0.5], [-48, 48]);
+  const by = useTransform(sy, [-0.5, 0.5], [-30, 30]);
+  const onPointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (reduce) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    px.set((e.clientX - r.left) / r.width - 0.5);
+    py.set((e.clientY - r.top) / r.height - 0.5);
+  };
+  // The line under the headline and the button arrive once the typing is nearly done.
+  const settle = Math.min(chars.length * 0.07, 1.4);
+
   return (
     <section
       aria-labelledby="hero-title"
+      onPointerMove={onPointerMove}
       className="hero relative left-1/2 -mt-[calc(1.5rem+env(safe-area-inset-top))] w-screen -translate-x-1/2 lg:-mt-12"
     >
       <FloatingLetters pool={pool} />
-      <Cursor variant="outline" className="cursor-a absolute bottom-[14%] left-[4%] hidden w-24 sm:block lg:w-32" seed={4} />
-      <Cursor variant="filled" className="cursor-b absolute top-[55%] right-[5%] w-12 sm:w-16 lg:w-20" seed={9} />
+      <m.div style={{ x: ax, y: ay }} className="absolute bottom-[14%] left-[4%] hidden w-24 sm:block lg:w-32">
+        <Cursor variant="outline" className="cursor-a w-full" seed={4} />
+      </m.div>
+      <m.div style={{ x: bx, y: by }} className="absolute top-[55%] right-[5%] w-12 sm:w-16 lg:w-20">
+        <Cursor variant="filled" className="cursor-b w-full" seed={9} />
+      </m.div>
       <div className="relative mx-auto flex min-h-[32rem] max-w-[60rem] flex-col items-center justify-center px-6 pt-24 pb-32 text-center lg:min-h-[38rem]">
         <h1 id="hero-title" className="display text-[clamp(2.75rem,9vw,6.5rem)]">
           <span className="sr-only">{title}</span>
@@ -116,8 +142,22 @@ export function Hero({
             <span className="caret" />
           </span>
         </h1>
-        <p className="mt-8 max-w-[32rem] text-[1.1875rem] leading-snug sm:text-[1.5rem]">{sub}</p>
-        <div className="mt-10">{cta}</div>
+        <m.p
+          className="mt-8 max-w-[32rem] text-[1.1875rem] leading-snug sm:text-[1.5rem]"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: settle, ease: [0.22, 0.8, 0.3, 1] }}
+        >
+          {sub}
+        </m.p>
+        <m.div
+          className="mt-10"
+          initial={{ opacity: 0, y: 18, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20, delay: settle + 0.25 }}
+        >
+          {cta}
+        </m.div>
       </div>
       <BrushEdge className="absolute inset-x-0 -bottom-px h-8 text-surface-2 sm:h-14" seed={11} />
     </section>

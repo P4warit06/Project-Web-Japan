@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { m } from "motion/react";
 import {
   BrandMark,
   HomeIcon,
@@ -62,14 +63,23 @@ export function TabBar({
                 <Link
                   href={href}
                   aria-current={active ? "page" : undefined}
-                  className={`relative flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-1 text-xs leading-tight font-medium lg:min-h-11 lg:flex-row lg:rounded-[var(--radius-control)] lg:px-4 lg:text-base ${
+                  className={`relative isolate flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-1 text-xs leading-tight font-medium lg:min-h-11 lg:flex-row lg:rounded-[var(--radius-control)] lg:px-4 lg:text-base ${
                     active
-                      ? "text-accent lg:bg-surface-2 lg:text-ink lg:font-semibold"
+                      ? "text-accent lg:text-ink lg:font-semibold"
                       : mobileActive
                         ? "text-accent lg:text-soft lg:hover:text-ink"
                         : "text-soft hover:text-ink"
                   }`}
                 >
+                  {active && (
+                    // The grey pill slides from the old link to the new one (a layout animation).
+                    <m.span
+                      layoutId="nav-pill"
+                      aria-hidden="true"
+                      className="absolute inset-0 -z-10 hidden rounded-[var(--radius-control)] bg-surface-2 lg:block"
+                      transition={{ type: "spring", stiffness: 500, damping: 38 }}
+                    />
+                  )}
                   {mobileActive && (
                     <span aria-hidden="true" className="absolute top-0 h-[3px] w-9 rounded-b-full bg-accent lg:hidden" />
                   )}

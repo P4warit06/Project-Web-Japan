@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Serif, Manrope, Noto_Sans_Thai_Looped, Taviraj } from "next/font/google";
 import { LocaleProvider } from "@/components/i18n/locale-provider";
+import { MotionProvider } from "@/components/motion/motion-provider";
 import { getT } from "@/lib/i18n/server";
 import "@fontsource/dseg7-classic/latin-400.css"; // the orange date imprint on photo prints
 import "./globals.css";
@@ -64,7 +65,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} className={`${uiThai.variable} ${uiLatin.variable} ${display.variable} ${voice.variable} h-full antialiased`}>
       <body className="min-h-full font-sans">
-        <LocaleProvider locale={locale}>{children}</LocaleProvider>
+        <LocaleProvider locale={locale}>
+          <MotionProvider>{children}</MotionProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

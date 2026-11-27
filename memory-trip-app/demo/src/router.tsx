@@ -1,6 +1,7 @@
 // A tiny router that keeps the page in the URL hash (#/trips/abc). GitHub Pages can only
 // serve files, so a "real" path such as /trips/abc would be a 404 after a refresh; a hash
 // never reaches the server. Reference: https://developer.mozilla.org/docs/Web/API/Window/hashchange_event
+import { m } from "motion/react";
 import { useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
 
 function subscribe(listener: () => void) {
@@ -69,7 +70,14 @@ export function Routes({ routes, fallback }: { routes: Route[]; fallback: ReactN
   }, [path]);
   for (const route of routes) {
     const params = matchRoute(route.path, path);
-    if (params) return <>{route.render(params)}</>;
+    if (params) {
+      // Keyed by path: each page settles in with a small rise (skipped for reduced motion).
+      return (
+        <m.div key={path} initial={{ y: 10 }} animate={{ y: 0 }} transition={{ duration: 0.35, ease: [0.22, 0.8, 0.3, 1] }}>
+          {route.render(params)}
+        </m.div>
+      );
+    }
   }
   return <>{fallback}</>;
 }

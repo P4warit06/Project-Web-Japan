@@ -1,7 +1,7 @@
-import Link from "next/link";
 import type { MediaDTO } from "@/features/media/types";
 import type { TFunction } from "@/lib/i18n";
-import { filmDate } from "@/components/format";
+import { Stagger } from "@/components/motion/reveal";
+import { PrintTile } from "./print-tile";
 
 /** Photos need the session cookie, so they are plain same-origin <img> (not next/image,
  *  whose optimizer fetches without the cookie). Width/height come from the DTO and the
@@ -47,23 +47,17 @@ export function PhotoGrid({
   coverThumbUrl?: string | null;
 }) {
   return (
-    <ul className="grid grid-cols-3 gap-3 md:grid-cols-4">
+    <Stagger className="grid grid-cols-3 gap-3 md:grid-cols-4">
       {items.map((m, i) => (
-        <li key={m.id} className="print">
-          <Link href={`/gallery/${m.id}`} className="print-frame block aspect-square">
-            <Photo media={m} alt={t("media.alt", { title: m.tripTitle ?? altTitle, n: i + 1 })} />
-            <span className="imprint" aria-hidden="true">
-              {filmDate(m.createdAt)}
-            </span>
-          </Link>
-          {coverThumbUrl && m.thumbUrl === coverThumbUrl && (
-            <span className="pointer-events-none absolute top-0 left-0 bg-ink px-2 py-0.5 text-xs font-semibold text-paper">
-              {t("media.cover.badge")}
-            </span>
-          )}
-        </li>
+        <PrintTile
+          key={m.id}
+          media={m}
+          index={i}
+          alt={t("media.alt", { title: m.tripTitle ?? altTitle, n: i + 1 })}
+          badge={coverThumbUrl && m.thumbUrl === coverThumbUrl ? t("media.cover.badge") : undefined}
+        />
       ))}
-    </ul>
+    </Stagger>
   );
 }
 

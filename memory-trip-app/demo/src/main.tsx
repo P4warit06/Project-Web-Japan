@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { MotionProvider } from "@/components/motion/motion-provider";
 import { App } from "./app";
 import { installFakeApi } from "./fake-api";
 import "@fontsource/noto-sans-thai-looped/thai-400.css";
@@ -29,6 +30,8 @@ const root = document.getElementById("root");
 if (!root) throw new Error("#root is missing from index.html");
 createRoot(root).render(
   <StrictMode>
-    <App />
+    <MotionProvider>
+      <App />
+    </MotionProvider>
   </StrictMode>,
 );

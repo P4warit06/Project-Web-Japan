@@ -19,7 +19,7 @@ export function Crane({ className, thread = 70, seed = 3 }: Art & { thread?: num
     { pts: [[74, 44], [112, 12], [96, 58]], closed: true }, // right wing
   ];
   return (
-    <svg {...common} viewBox={`0 ${-thread} 140 ${100 + thread}`} className={className}>
+    <svg {...common} viewBox={`0 ${-thread} 140 ${100 + thread}`} className={`h-auto w-full ${className ?? ""}`}>
       <path className="doodle" d={sketch([[72, -thread], [72, 46]], seed, { wobble: 0.5 })} />
       {shapes.map((s, i) => (
         <path key={i} className="doodle" fill={paper} d={sketch(s.pts, seed + i, { closed: s.closed, wobble: 0.9 })} />
