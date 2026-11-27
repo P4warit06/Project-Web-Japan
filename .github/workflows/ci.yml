@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches: [main, "phase*"]
-  pull_request:
+  workflow_call: # also called by deploy.yml, which runs it for pull requests
 
 permissions:
   contents: read
@@ -41,6 +41,8 @@ jobs:
           cache: npm
           cache-dependency-path: memory-trip-app/package-lock.json
       - run: npm ci
+      # Fails on known high/critical vulnerabilities (this is what flags an outdated Next.js).
+      - run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test

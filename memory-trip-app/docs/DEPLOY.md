@@ -46,9 +46,10 @@ References: [R2 buckets](https://developers.cloudflare.com/r2/buckets/), [API to
 References: [Monorepos / Root Directory](https://vercel.com/docs/monorepos), [Environment variables](https://vercel.com/docs/environment-variables).
 
 1. Vercel → **Add New → Project** → import `Project-Web-Japan`.
-2. **Root Directory: `memory-trip-app`** (click *Edit* next to it). The app lives in a subfolder; without this you get "No Next.js version detected".
-3. Framework: Next.js (auto-detected). Leave build/install commands on their defaults (`postinstall` runs `prisma generate`).
-4. Add the environment variables below **before** the first deploy.
+2. **Project name: `keepmemoryiceandjapan`.** Vercel names must be lowercase, so `keepmemoryIceAndJapan` becomes `keepmemoryiceandjapan`. Production then lives at `https://keepmemoryiceandjapan.vercel.app` **if that name is still free** (first come, first served; if taken, Vercel tells you and you pick another).
+3. **Root Directory: `memory-trip-app`** (click *Edit* next to it). The app lives in a subfolder; without this you get "No Next.js version detected".
+4. Framework: Next.js (auto-detected). Leave build/install commands on their defaults (`postinstall` runs `prisma generate`).
+5. Add the environment variables below **before** the first deploy.
 
 | Variable | Production | Preview | Notes |
 |---|---|---|---|
@@ -58,10 +59,10 @@ References: [Monorepos / Root Directory](https://vercel.com/docs/monorepos), [En
 | `STORAGE_PROVIDER` | `r2` | `r2` | Required: Vercel has no persistent disk, `local` is refused on Vercel |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | production bucket | preview bucket | Mark the secret as **Sensitive** |
 | `ALLOW_DEV_LOGIN` | **do not set** | `true` | Ignored in Production even if set |
-| `NEXT_PUBLIC_APP_URL` | your production URL | leave unset | |
+| `NEXT_PUBLIC_APP_URL` | `https://keepmemoryiceandjapan.vercel.app` | leave unset | |
 
-5. **Region:** `vercel.json` asks for `sin1` (Singapore) to sit next to the database. Hobby allows **one** function region ([docs](https://vercel.com/docs/functions/configuring-functions/region)). If the deployment is rejected because of the region, delete the `regions` line in `memory-trip-app/vercel.json`; the app still works, just slower from Thailand.
-6. Click **Deploy**.
+6. **Region:** `vercel.json` asks for `sin1` (Singapore) to sit next to the database. Hobby allows **one** function region ([docs](https://vercel.com/docs/functions/configuring-functions/region)). If the deployment is rejected because of the region, delete the `regions` line in `memory-trip-app/vercel.json`; the app still works, just slower from Thailand.
+7. Click **Deploy** (once, to create the project). From then on GitHub Actions deploys, see section 11.
 
 ## 4. Protect Preview deployments (do this before enabling the mock login)
 
@@ -124,3 +125,57 @@ No Docker? Install PostgreSQL yourself, or use a free Neon branch for developmen
 
 - M7: real login with LINE LIFF (then Production becomes usable).
 - M9: Content-Security-Policy, shared rate limiting, audit log, export/delete data, scripted backups.
+
+## 11. Deploy with GitHub Actions (the method you chose)
+
+`.github/workflows/deploy.yml` deploys with the Vercel CLI instead of Vercel's own Git integration. `memory-trip-app/vercel.json` sets `git.deploymentEnabled: false`, so pushes do **not** also deploy through Vercel (otherwise you would get every deployment twice). If Vercel rejects that setting, turn Git deployments off in *Project Settings → Git*.
+
+| Event | What happens |
+|---|---|
+| Pull request from this repository | CI (lint, type-check, tests, build) → **Preview** deployment |
+| *Actions → Deploy to Vercel → Run workflow* | Choose **preview** or **production**. Production is manual on purpose |
+| Pull request from a fork | Nothing runs (no secrets are shared with forks) |
+
+**Nothing is deployed until all CI checks pass.** If the three secrets below do not exist yet, pull requests skip the deploy with a notice instead of failing.
+
+### One-time setup
+
+1. Create the Vercel project (section 3). Then get its two IDs by running this once on your computer, from the **repository root**:
+   ```bash
+   npx vercel@66.6.0 link        # choose your account and the project keepmemoryiceandjapan
+   cat .vercel/project.json      # shows "orgId" and "projectId"; this folder is git-ignored
+   ```
+2. Create a token: Vercel → [Account Settings → Tokens](https://vercel.com/account/tokens). Give it an expiry and a name like `github-actions`.
+3. GitHub → repository **Settings → Secrets and variables → Actions → New repository secret**, three secrets:
+
+   | Name | Value |
+   |---|---|
+   | `VERCEL_TOKEN` | the token from step 2 |
+   | `VERCEL_ORG_ID` | `orgId` from `.vercel/project.json` |
+   | `VERCEL_PROJECT_ID` | `projectId` from `.vercel/project.json` |
+
+4. Optional but recommended: GitHub **Settings → Environments → production → Required reviewers** (add yourself) so a production deploy needs one extra approval click.
+
+> **Security notes.** The token can deploy to your Vercel account: keep it only in GitHub secrets, give it an expiry, and revoke it if it ever leaks. The workflow pins Vercel CLI `66.6.0`, runs the CLI with `--token` from a secret (never from user input), and has `contents: read` permission only. Third-party actions are referenced by version tag (`@v4`); pinning them to a commit SHA is stricter and can be done later.
+
+## 12. Preflight: check an environment before you deploy
+
+`npm run preflight` inspects an environment and **never prints secret values**. It fails (exit code 1) on mistakes that would break or endanger a deployment: missing or placeholder `SESSION_SECRET`, `localhost` database, `STORAGE_PROVIDER=local` on Vercel, missing R2 variables, the mock-login flag in Production, a secret named `NEXT_PUBLIC_…`, a pooled `DIRECT_URL`, and more. Add `--live` to also connect to the database (and check that all migrations are applied) and to write/read/delete a test object in R2.
+
+```bash
+cd memory-trip-app
+
+# 1. your local setup
+npm run preflight
+
+# 2. a hosted environment: download its variables into a git-ignored file, check, delete
+npx vercel@66.6.0 env pull .env.vercel.preview --environment=preview     # run vercel link first
+npm run preflight -- --target preview --env-file .env.vercel.preview --live
+rm .env.vercel.preview
+
+npx vercel@66.6.0 env pull .env.vercel.production --environment=production
+npm run preflight -- --target production --env-file .env.vercel.production --live
+rm .env.vercel.production
+```
+
+Limits you should know: variables marked **Sensitive** in Vercel cannot be read back, so `env pull` leaves them empty and the check reports them as missing; in that case copy the values into the temporary file yourself. `--live` talks to your real database and bucket (it only runs `select 1`, reads the migration table, and writes then deletes one tiny test object).

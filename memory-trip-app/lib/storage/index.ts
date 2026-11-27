@@ -16,7 +16,9 @@ export function getStorage(): StorageProvider {
       // Vercel functions have no persistent disk: photos would vanish.
       throw new Error("STORAGE_PROVIDER=local cannot be used on Vercel. Set STORAGE_PROVIDER=r2.");
     }
-    instance = new LocalStorage(process.env.LOCAL_STORAGE_DIR);
+    // Fixed folder (./storage/uploads): a static path keeps Next from tracing the whole project
+    // into the server bundle. Tests construct LocalStorage themselves with a temp folder.
+    instance = new LocalStorage();
   } else if (provider === "r2") {
     instance = createR2Storage();
   } else {

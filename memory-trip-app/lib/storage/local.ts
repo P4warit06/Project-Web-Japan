@@ -1,5 +1,5 @@
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
-import { dirname, join, resolve, sep } from "node:path";
+import { dirname, isAbsolute, join, normalize, resolve, sep } from "node:path";
 import { randomUUID } from "node:crypto";
 import { assertSafeKey, type StorageProvider } from "./types";
 
@@ -9,7 +9,10 @@ export class LocalStorage implements StorageProvider {
   private readonly root: string;
 
   constructor(rootDir: string = join(process.cwd(), "storage", "uploads")) {
-    this.root = resolve(rootDir);
+    // Absolute only: `resolve(rootDir)` would depend on the working directory, and Next's bundler
+    // would then trace the whole project into the server output (slow, can exceed Vercel limits).
+    if (!isAbsolute(rootDir)) throw new Error("LocalStorage needs an absolute folder path");
+    this.root = normalize(rootDir).replace(new RegExp(`\\${sep}+$`), "");
   }
 
   private pathFor(key: string): string {
