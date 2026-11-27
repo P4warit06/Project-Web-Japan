@@ -36,6 +36,8 @@
   },
   "devDependencies": {
     "@fontsource/dseg7-classic": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
     "@fontsource/noto-sans-thai-looped": "^5.3.0",
     "@fontsource/taviraj": "^5.3.0",
     "@tailwindcss/postcss": "^4",

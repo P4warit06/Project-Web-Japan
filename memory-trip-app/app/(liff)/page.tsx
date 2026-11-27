@@ -8,6 +8,8 @@ import { LinkButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PlusIcon } from "@/components/ui/icons";
 import { MemoryStops } from "@/components/memory/memory-stops";
+import { Hero } from "@/components/shell/hero";
+import { Statement } from "@/components/shell/statement";
 import { TripRouteList } from "@/components/trip/trip-route";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,12 +24,26 @@ export default async function DashboardPage() {
   const isEmpty = data.counts.trips === 0;
 
   return (
-    <div className="flex flex-col gap-10">
+    <>
+      <div>
+        <Hero
+          title={t("dashboard.hero.title")}
+          sub={t("dashboard.hero.sub")}
+          cta={
+            <LinkButton href={addMemoryHref} variant="light">
+              <PlusIcon className="h-5 w-5" />
+              {t("memories.new")}
+            </LinkButton>
+          }
+        />
+        <Statement lead={t("dashboard.statement.lead")} emphasis={t("dashboard.statement.emphasis")} />
+      </div>
+    <div className="mt-12 flex flex-col gap-10">
       <header>
-        <h1 className="voice text-[1.875rem] leading-[1.35] font-semibold [overflow-wrap:anywhere]">
+        <h2 className="display text-[clamp(2rem,5vw,3rem)] [overflow-wrap:anywhere]">
           {t("dashboard.greeting", { name: user?.displayName ?? "" })}
-        </h1>
-        <p className="mt-1 text-soft">
+        </h2>
+        <p className="mt-2 text-soft">
           {isEmpty
             ? t("dashboard.emptyLead")
             : t("dashboard.summary", {
@@ -38,10 +54,6 @@ export default async function DashboardPage() {
         </p>
         {!isEmpty && (
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <LinkButton href={addMemoryHref}>
-              <PlusIcon className="h-5 w-5" />
-              {t("memories.new")}
-            </LinkButton>
             <LinkButton href="/trips/new" variant="secondary">
               {t("trips.new")}
             </LinkButton>
@@ -97,5 +109,6 @@ export default async function DashboardPage() {
         </>
       )}
     </div>
+    </>
   );
 }

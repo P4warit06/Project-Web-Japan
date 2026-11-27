@@ -1,39 +1,47 @@
 # Design direction
 
-Why it changed: the first version (indigo on lavender-grey, rounded white cards, pill buttons, flat clip-art pictures) looked like every generated app. A memory book lives or dies by its **photos**, so the design now starts from the photo print, and everything else stays quiet around it.
+Two earlier versions were rejected as generic. This one follows a reference the owner chose: [ellipsus.com](https://ellipsus.com/), a collaborative writing app. **Only its look and structure are borrowed** (layout, type character, colour feel, kinds of drawings); the drawings, words and wordmark are original to this app.
 
-## The one memorable thing: the photo print
+## What the reference does (read from two screenshots; sections below the fold were not seen)
 
-Every photo is shown as a **print**: a white border, a hairline shadow, and the **orange date imprint of a disposable film camera** in the corner (`'26 3 29`). The imprint uses the DSEG7 seven-segment font ([DSEG](https://www.keshikan.net/fonts-e.html), packaged as [@fontsource/dseg7-classic](https://fontsource.org/fonts/dseg7-classic)). It repeats a date shown elsewhere, so it is hidden from screen readers (`aria-hidden`). Prints stay white in dark mode, like a real print on a dark table.
+| Part | Observed |
+|---|---|
+| Top bar | Full-width off-white bar, 3 px near-black line above it. Wordmark left, five links centre (some with chevrons), outlined "Log in" and solid black "Sign up" right (about 12 px corners). |
+| Hero | Charcoal background. Huge, tightly set, high-contrast serif headline in white with a blinking text caret. A short sans subtitle, one white button. Faint letters scattered and drifting; a white outline cursor on the left and a purple cursor on the right (people writing together). |
+| Transition | A light grey band with a hand-painted, uneven edge into the off-white page. |
+| Statement | A large left-aligned serif sentence; one phrase in italic with a red wavy "spell-check" underline; an accent word in purple in the headline above it. |
+| Illustration | Hand-drawn black line art: a stack of books, hanging paper cranes, small x-shaped sparkles. |
+| Type | A display serif for statements, a clean grotesque for the interface. |
+| Palette | Charcoal `#27282B`, off-white `#F4F4F1`, grey band `#E6E6E2`, near-black buttons, purple accent, red squiggle. |
 
-## Palette (CSS variables in `app/globals.css`)
+## What changed here
 
-| Token | Light | Role |
-|---|---|---|
-| paper | `#E9EBE4` | page: cool grey-green, a station platform in the morning |
-| surface | `#F6F6F1` | fields, bars |
-| ink | `#1A2528` | text and primary buttons (no coloured pill buttons) |
-| accent (asagi) | `#14636F` | links, active tab, focus |
-| print | `#FBFBF7` | photo border (same in dark mode) |
-| imprint | `#E8832A` | film date only |
-| danger | `#B3261E` | delete |
+| Reference | Memory Trip |
+|---|---|
+| Top bar | Same structure on screens 1024 px and wider (name, links, one primary button, 3 px ink line). Phones keep a bottom tab bar, because the app runs inside the LINE phone browser. |
+| Hero with caret | Home opens with the dark hero: "Remember it together." types itself once (not for people who ask for reduced motion; the full text is always in the page for screen readers and no-JavaScript). |
+| Floating letters, two cursors | Same idea, drawn from this page's own letters; the two cursors stand for the two of you. |
+| Brush edge, grey band | Hand-painted SVG edge between hero, band and page. |
+| Statement + squiggle | "Your camera roll keeps where you were. *Not what you talked about.*" (Thai version included). The wavy underline is native CSS (`text-decoration: wavy`). |
+| Illustrations | Original line art: hanging **paper cranes** (origami, fitting for Japan), a **stack of prints**, sparkles. Drawn by code with a pencil-wobble helper, so there are no image files. |
+| Type | **Instrument Serif** (Latin headlines; Thai headlines fall back to Taviraj), **Manrope** (Latin interface) with **Noto Sans Thai Looped** (Thai interface), Taviraj for the couple's own words. |
 
-Trip line colours are named after Japanese traditional colours ([Traditional colors of Japan](https://en.wikipedia.org/wiki/Traditional_colors_of_Japan)): 藍 *ai*, 柿 *kaki*, 抹茶 *matcha*, 桜 *sakura*, 浅葱 *asagi*, 山吹 *yamabuki*. Dark mode has its own lighter set.
+Kept from the previous round because it is specific to this subject: photos are **prints** with a white border and the orange film-date imprint (DSEG7), trips are routes with Japanese-named line colours.
 
-## Type
+## Tokens (`app/globals.css`)
 
-- **Taviraj** (serif): trip titles and the couple's own words, like the printed captions of an album. ([Google Fonts](https://fonts.google.com/specimen/Taviraj))
-- **Noto Sans Thai Looped**: the interface. The looped style is the traditional, easier-to-read Thai. ([Google Fonts](https://fonts.google.com/noto/specimen/Noto+Sans+Thai+Looped))
-- DSEG7 Classic: the imprint only.
+Paper `#F4F4F1`, band `#E6E6E2`, ink `#17171A`, night `#27282B`, deep purple `#8A2AAE` for links and focus (6.3:1 on paper), bright purple `#C85BE8` only for large display text and the cursors (3.1:1, allowed for large text), squiggle `#E8454A`. Dark mode has its own set. Corners are 12 px.
 
-## Shape
+## Accessibility and performance notes
 
-Square-ish (4 px) instead of rounded: fields, buttons, tags, prints. Primary button is solid ink; secondary is an ink outline. The demo notice is a dashed "perforated" ticket edge. The route line (trip = two stations joined by a line, memories as stops) stays as the structural device.
+- The hero headline has an `sr-only` copy with the full text; the typed text and the floating letters are `aria-hidden`.
+- Motion (typing, drifting letters, floating cursors, caret blink) only runs when the system does not ask for reduced motion.
+- Fonts are self-hosted (Next.js font loading in the app, Fontsource in the demo); doodles are inline SVG (no requests).
 
 ## Sample pictures in the demo
 
-Real photos cannot be shipped (no rights, no network), and flat vector art looked cheap next to a print. The demo's pictures are generated soft-focus scenes with film grain and vignette (out-of-focus lights, misty ridges, hazy sunset). They are placeholders: **upload your own photos in the demo to judge the real look**.
+Soft-focus generated scenes with grain; placeholders. Upload your own photos to judge the real look.
 
-## Not done yet (ideas, from DESIGN-INSPIRATION.md)
+## Not done yet
 
-Station-stamp motif for places, "print the trip as a book" export, a looped face for long memory text.
+Station-stamp motif for places, "print the trip as a book" export, the reference's dropdown navigation (we have six flat links), and any sections of the reference below the hero (not seen).

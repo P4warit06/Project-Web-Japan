@@ -35,7 +35,7 @@ function Shell() {
     document.documentElement.lang = locale;
   }, [locale]);
   return (
-    <div className="md:pl-[232px]">
+    <div>
       <a
         href="#main"
         onClick={(e) => {
@@ -49,6 +49,7 @@ function Shell() {
       </a>
       <TabBar
         brand={t("app.name")}
+        cta={{ href: "/memories/new", label: t("memories.new") }}
         navLabel={t("nav.label")}
         labels={{
           home: t("nav.home"),
@@ -62,12 +63,12 @@ function Shell() {
       <main
         id="main"
         tabIndex={-1}
-        className="mx-auto w-full max-w-[42rem] pt-[calc(1.5rem+env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] md:px-10 md:pt-12 md:pb-20"
+        className="mx-auto w-full max-w-[42rem] pt-[calc(1.5rem+env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] md:px-10 md:pb-20 lg:pt-[calc(var(--nav-h)+3px+3rem)]"
       >
-        <p role="note" className="note mb-6">
+        <Routes routes={routes} fallback={<NotFound />} />
+        <p role="note" className="note mt-12">
           {demoText[locale].banner}
         </p>
-        <Routes routes={routes} fallback={<NotFound />} />
       </main>
     </div>
   );

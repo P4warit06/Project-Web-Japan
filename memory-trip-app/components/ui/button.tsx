@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type Variant = "primary" | "secondary" | "danger" | "ghost" | "quiet-danger";
+type Variant = "primary" | "secondary" | "danger" | "ghost" | "quiet-danger" | "light";
 
 export function buttonClass(variant: Variant = "primary", extra = ""): string {
   return `btn btn-${variant} ${extra}`.trim();

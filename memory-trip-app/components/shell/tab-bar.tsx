@@ -26,67 +26,66 @@ const TABS: { key: TabKey; href: string; Icon: typeof HomeIcon; desktopOnly?: bo
   { key: "settings", href: "/settings", Icon: SettingsIcon },
 ];
 
-/** Bottom tab bar on phones, left rail on desktop. Labels arrive translated. */
+/** Bottom tab bar on phones; on wide screens a top bar like a website: name on the left, links
+ *  in the middle, one button on the right, a 3px ink line above. Labels arrive translated. */
 export function TabBar({
   labels,
   navLabel,
   brand,
+  cta,
 }: {
   labels: Record<TabKey, string>;
   navLabel: string;
   brand: string;
+  /** The one primary action, shown on the right of the top bar. */
+  cta: { href: string; label: string };
 }) {
   const pathname = usePathname();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   return (
     <nav
       aria-label={navLabel}
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-rule bg-surface pb-[env(safe-area-inset-bottom)] md:inset-y-0 md:right-auto md:w-[232px] md:border-t-0 md:border-r md:px-4 md:pt-8 md:pb-6"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-rule bg-surface pb-[env(safe-area-inset-bottom)] lg:top-0 lg:bottom-auto lg:h-[var(--nav-h)] lg:border-t-[3px] lg:border-t-ink lg:border-b lg:border-b-rule lg:bg-paper lg:pb-0"
     >
-      <p className="voice mb-8 hidden items-center gap-3 px-3 text-xl font-semibold text-ink md:flex">
-        <BrandMark className="shrink-0 text-accent" />
-        {brand}
-      </p>
-      <ul className="grid grid-cols-5 md:flex md:flex-col md:gap-1">
-        {TABS.map(({ key, href, Icon, desktopOnly }) => {
-          const active = isActive(href);
-          // On phones Places has no tab of its own: highlight Trips while on /places.
-          const mobileActive = active || (key === "trips" && pathname.startsWith("/places"));
-          if (desktopOnly && !active) {
+      <div className="mx-auto lg:flex lg:h-full lg:max-w-[84rem] lg:items-center lg:justify-between lg:gap-6 lg:px-8">
+        <Link href="/" className="hidden shrink-0 items-center gap-2.5 text-ink lg:flex" aria-label={brand}>
+          <BrandMark className="text-accent" />
+          <span className="display text-[1.875rem] leading-none">{brand}</span>
+        </Link>
+        <ul className="grid grid-cols-5 lg:flex lg:items-center lg:gap-1">
+          {TABS.map(({ key, href, Icon, desktopOnly }) => {
+            const active = isActive(href);
+            // On phones Places has no tab of its own: highlight Trips while on /places.
+            const mobileActive = active || (key === "trips" && pathname.startsWith("/places"));
             return (
-              <li key={key} className="hidden md:block">
+              <li key={key} className={desktopOnly ? "hidden lg:block" : undefined}>
                 <Link
                   href={href}
-                  className="flex min-h-11 items-center gap-3 rounded px-3 font-medium text-soft hover:text-ink"
+                  aria-current={active ? "page" : undefined}
+                  className={`relative flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-1 text-xs leading-tight font-medium lg:min-h-11 lg:flex-row lg:rounded-[var(--radius-control)] lg:px-4 lg:text-base ${
+                    active
+                      ? "text-accent lg:bg-surface-2 lg:text-ink lg:font-semibold"
+                      : mobileActive
+                        ? "text-accent lg:text-soft lg:hover:text-ink"
+                        : "text-soft hover:text-ink"
+                  }`}
                 >
-                  <Icon className="h-6 w-6 shrink-0" />
-                  <span className="truncate">{labels[key]}</span>
+                  {mobileActive && (
+                    <span aria-hidden="true" className="absolute top-0 h-[3px] w-9 rounded-b-full bg-accent lg:hidden" />
+                  )}
+                  <Icon className="h-6 w-6 shrink-0 lg:hidden" />
+                  <span className="max-w-full truncate">{labels[key]}</span>
                 </Link>
               </li>
             );
-          }
-          return (
-            <li key={key} className={desktopOnly ? "hidden md:block" : undefined}>
-              <Link
-                href={href}
-                aria-current={active ? "page" : undefined}
-                className={`relative flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-1 text-xs leading-tight font-medium md:min-h-11 md:flex-row md:justify-start md:gap-3 md:rounded md:px-3 md:text-base ${
-                  active ? "text-accent md:bg-surface-2" : mobileActive ? "text-accent md:text-soft md:hover:text-ink" : "text-soft hover:text-ink"
-                }`}
-              >
-                {mobileActive && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-0 h-[3px] w-9 rounded-b-full bg-accent md:hidden"
-                  />
-                )}
-                <Icon className="h-6 w-6 shrink-0" />
-                <span className="max-w-full truncate">{labels[key]}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+          })}
+        </ul>
+        <div className="hidden shrink-0 lg:block">
+          <Link href={cta.href} className="btn btn-primary">
+            {cta.label}
+          </Link>
+        </div>
+      </div>
     </nav>
   );
 }

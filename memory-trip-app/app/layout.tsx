@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_Thai_Looped, Taviraj } from "next/font/google";
+import { Instrument_Serif, Manrope, Noto_Sans_Thai_Looped, Taviraj } from "next/font/google";
 import { LocaleProvider } from "@/components/i18n/locale-provider";
 import { getT } from "@/lib/i18n/server";
 import "@fontsource/dseg7-classic/latin-400.css"; // the orange date imprint on photo prints
@@ -8,10 +8,27 @@ import "./globals.css";
 // Both families carry real Thai AND Latin glyphs (Geist has no Thai).
 // Noto Sans Thai Looped = interface: the looped (traditional) Thai style reads easily at small sizes.
 // Taviraj (serif) = the couple's own words, like the printed captions of a photo album.
-const ui = Noto_Sans_Thai_Looped({
-  variable: "--font-ui",
-  subsets: ["thai", "latin"],
+const uiThai = Noto_Sans_Thai_Looped({
+  variable: "--font-ui-thai",
+  subsets: ["thai"],
   weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+// Latin letters of the interface: Manrope, a clean grotesque. Thai glyphs fall back to the looped face above.
+const uiLatin = Manrope({
+  variable: "--font-ui-latin",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Big headlines (Latin): Instrument Serif, tight and high-contrast. Thai headlines fall back to Taviraj.
+const display = Instrument_Serif({
+  variable: "--font-display-latin",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -45,7 +62,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { locale } = await getT();
   return (
-    <html lang={locale} className={`${ui.variable} ${voice.variable} h-full antialiased`}>
+    <html lang={locale} className={`${uiThai.variable} ${uiLatin.variable} ${display.variable} ${voice.variable} h-full antialiased`}>
       <body className="min-h-full font-sans">
         <LocaleProvider locale={locale}>{children}</LocaleProvider>
       </body>

@@ -15,7 +15,7 @@ export function PageHeader({
     <header className="mb-6">
       {back && <BackLink href={back.href} label={back.label} />}
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-        <h1 className="voice min-w-0 text-[1.75rem] leading-[1.35] font-semibold [overflow-wrap:anywhere]">
+        <h1 className="display min-w-0 text-[clamp(2.25rem,6vw,3.5rem)] [overflow-wrap:anywhere]">
           {title}
         </h1>
         {actions}

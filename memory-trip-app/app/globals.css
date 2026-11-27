@@ -4,25 +4,31 @@
    Memory Trip tokens. Light is default; dark follows the system.
    "Line" colours are for graphics only (rails, rings), one per trip.
 ------------------------------------------------------------------- */
-/* Palette: a station platform in the morning. Cool grey-green paper, deep slate ink, and
-   one deep teal (asagi) for links. Photos are printed on white; the date imprint is the
-   orange of a disposable-camera back. Stamp red (shu) is kept for danger. */
+/* Palette, after the look of ellipsus.com (see docs/DESIGN-DIRECTION.md): warm off-white paper,
+   a light grey band, near-black ink, and a charcoal "night" hero. One purple, bright only for
+   big display text and the two cursors, deep for links and focus so it stays readable.
+   Photos are printed on white with the orange date imprint of a film camera. */
 :root {
-  --paper: #e9ebe4;
-  --surface: #f6f6f1;
-  --surface-2: #dadfd6;
-  --ink: #1a2528;
-  --soft: #4f5d62;
-  --rule: #bcc4ba;
-  --accent: #14636f;
+  --paper: #f4f4f1;
+  --surface: #fbfbf9;
+  --surface-2: #e6e6e2; /* the light grey band */
+  --ink: #17171a;
+  --soft: #5c5c60;
+  --rule: #d3d3ce;
+  --accent: #8a2aae; /* links, focus, active tab: 6.3:1 on paper */
+  --accent-bright: #c85be8; /* display text and cursors only */
   --on-accent: #ffffff;
   --danger: #b3261e;
   --on-danger: #ffffff;
-  --focus: #14636f;
+  --focus: #8a2aae;
+  --night: #27282b; /* hero background */
+  --on-night: #f4f4f1;
+  --muted-night: #a9aaae;
+  --squiggle: #e8454a; /* the red wavy "spellcheck" underline */
   --print: #fbfbf7; /* the white of a photo print: the same in light and dark */
   --imprint: #e8832a;
 
-  /* Trip line colours, named after Japanese traditional colours (see docs/DESIGN-DIRECTION.md) */
+  /* Trip line colours, named after Japanese traditional colours */
   --line-0: #2f4f7f; /* ai, indigo */
   --line-1: #c05a22; /* kaki, persimmon */
   --line-2: #5a7d36; /* matcha */
@@ -30,24 +36,28 @@
   --line-4: #1d7889; /* asagi */
   --line-5: #a87a00; /* yamabuki */
 
-  --radius-control: 0.25rem;
-  --radius-sheet: 0.375rem;
+  --radius-control: 0.75rem;
+  --radius-sheet: 1rem;
   --tab-h: 3.75rem;
+  --nav-h: 4.5rem; /* desktop top bar */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #121a1c;
-    --surface: #1b2528;
-    --surface-2: #26323a;
-    --ink: #e8ece6;
-    --soft: #a3b2b6;
-    --rule: #34464b;
-    --accent: #78c6d2;
-    --on-accent: #0f1a1c;
+    --paper: #1c1d20;
+    --surface: #26272b;
+    --surface-2: #2e3035;
+    --ink: #f1f1ee;
+    --soft: #a8a9ad;
+    --rule: #3a3c42;
+    --accent: #d97bf0;
+    --accent-bright: #d97bf0;
+    --on-accent: #1c1d20;
     --danger: #ff8a80;
     --on-danger: #2a0a08;
-    --focus: #78c6d2;
+    --focus: #d97bf0;
+    --night: #0f1012;
+    --muted-night: #8e8f94;
 
     --line-0: #8fa9d6;
     --line-1: #ee9564;
@@ -66,13 +76,16 @@
   --color-soft: var(--soft);
   --color-rule: var(--rule);
   --color-accent: var(--accent);
+  --color-night: var(--night);
+  --color-on-night: var(--on-night);
   --color-on-accent: var(--on-accent);
   --color-danger: var(--danger);
   --color-on-danger: var(--on-danger);
 
-  --font-sans: var(--font-ui), system-ui, sans-serif;
+  --font-sans: var(--font-ui-latin), var(--font-ui-thai), system-ui, sans-serif;
   --font-imprint: "DSEG7 Classic", ui-monospace, monospace;
   --font-serif: var(--font-voice), "Noto Serif Thai", serif;
+  --font-display: var(--font-display-latin), var(--font-voice), "Noto Serif Thai", serif;
 
   --text-body: 1rem;
   --radius-control: var(--radius-control);
@@ -119,6 +132,78 @@ h3 {
   .user-text {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+  }
+  /* Big headlines: a tight, high-contrast serif (Instrument Serif for Latin, Taviraj for Thai).
+     Regular weight only: Instrument Serif has no bold, and the browser must not fake one. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-synthesis: none;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+  :lang(th) .display {
+    letter-spacing: 0;
+    line-height: 1.3; /* Thai stacks vowel and tone marks above and below the line */
+  }
+  /* The red wavy underline of a spell checker, used once per page on one phrase. */
+  .squiggle {
+    font-style: italic;
+    text-decoration: underline wavy var(--squiggle);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+    text-decoration-skip-ink: none;
+  }
+  :lang(th) .squiggle {
+    font-style: normal;
+  }
+  /* Accent word in a display headline (large text only: 3:1 is enough at this size) */
+  .hl {
+    color: var(--accent-bright);
+  }
+
+  /* ---------- Dark hero ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--night);
+    color: var(--on-night);
+  }
+  .caret {
+    display: inline-block;
+    width: 0.06em;
+    height: 0.9em;
+    margin-left: 0.08em;
+    vertical-align: -0.08em;
+    background: currentColor;
+  }
+  .letter {
+    position: absolute;
+    color: var(--muted-night);
+    font-weight: 500;
+    user-select: none;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .caret {
+      animation: blink 1.05s steps(1) infinite;
+    }
+    .letter {
+      animation: drift var(--dur, 14s) ease-in-out var(--delay, 0s) infinite alternate;
+    }
+    .cursor-a {
+      animation: float 6s ease-in-out infinite alternate;
+    }
+    .cursor-b {
+      animation: float 7.5s ease-in-out -2s infinite alternate;
+    }
+  }
+  .doodle {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   /* ---------- Photo print: the memorable element ----------
@@ -205,6 +290,14 @@ h3 {
   .btn-danger {
     background: var(--danger);
     color: var(--on-danger);
+  }
+  /* On the dark hero: white button, like the one on ellipsus.com */
+  .btn-light {
+    background: var(--on-night);
+    color: var(--night);
+  }
+  .btn-light:hover {
+    background: #ffffff;
   }
   .btn-ghost {
     background: transparent;
@@ -420,6 +513,28 @@ h3 {
       border-radius: var(--radius-sheet);
       padding-bottom: 1.5rem;
     }
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(var(--dx, 8px), var(--dy, -26px), 0);
+  }
+}
+@keyframes float {
+  from {
+    transform: translate3d(0, 0, 0) rotate(var(--rot, 0deg));
+  }
+  to {
+    transform: translate3d(6px, -10px, 0) rotate(var(--rot, 0deg));
   }
 }
 

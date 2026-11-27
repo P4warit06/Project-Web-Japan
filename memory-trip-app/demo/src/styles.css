@@ -2,7 +2,9 @@
 @import "../../app/globals.css";
 
 :root {
-  --font-ui: "Noto Sans Thai Looped";
+  --font-ui-thai: "Noto Sans Thai Looped";
+  --font-ui-latin: "Manrope";
+  --font-display-latin: "Instrument Serif";
   --font-voice: "Taviraj";
 }
 
