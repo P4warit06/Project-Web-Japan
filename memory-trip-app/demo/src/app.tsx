@@ -43,7 +43,7 @@ function Shell() {
           e.preventDefault();
           document.getElementById("main")?.focus();
         }}
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-3 focus:font-semibold"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-surface focus:px-4 focus:py-3 focus:font-semibold"
       >
         {t("a11y.skip")}
       </a>
@@ -64,7 +64,7 @@ function Shell() {
         tabIndex={-1}
         className="mx-auto w-full max-w-[42rem] pt-[calc(1.5rem+env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] md:px-10 md:pt-12 md:pb-20"
       >
-        <p role="note" className="mb-6 rounded-[var(--radius-control)] bg-surface-2 px-4 py-3 text-[0.9375rem]">
+        <p role="note" className="note mb-6">
           {demoText[locale].banner}
         </p>
         <Routes routes={routes} fallback={<NotFound />} />

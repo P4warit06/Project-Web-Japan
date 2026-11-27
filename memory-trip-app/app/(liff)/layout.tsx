@@ -10,7 +10,7 @@ export default async function ShellLayout({ children }: { children: React.ReactN
     <div className="md:pl-[232px]">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-3 focus:font-semibold"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-surface focus:px-4 focus:py-3 focus:font-semibold"
       >
         {t("a11y.skip")}
       </a>

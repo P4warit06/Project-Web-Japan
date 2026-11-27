@@ -93,15 +93,15 @@ export function createSeed(): DemoState {
   ];
 
   const media: MediaRec[] = [
-    photo("m-kyoto-1", "kyoto", "mem-kyoto-1", "2026-03-29T06:40", "torii", "dusk", 11),
-    photo("m-kyoto-2", "kyoto", "mem-kyoto-1", "2026-03-29T07:05", "mountain", "spring", 12),
+    photo("m-kyoto-1", "kyoto", "mem-kyoto-1", "2026-03-29T06:40", "horizon", "dusk", 11),
+    photo("m-kyoto-2", "kyoto", "mem-kyoto-1", "2026-03-29T07:05", "ridges", "spring", 12),
     photo("m-kyoto-3", "kyoto", "mem-kyoto-2", "2026-03-31T16:20", "blossom", "spring", 13, true),
     photo("m-kyoto-4", "kyoto", "mem-kyoto-2", "2026-03-31T17:00", "blossom", "night", 14),
     photo("m-kyoto-5", "kyoto", null, "2026-04-01T20:30", "lanterns", "night", 15),
     photo("m-kyoto-6", "kyoto", "mem-kyoto-3", "2026-04-01T22:00", "lanterns", "dusk", 16),
     photo("m-osaka-1", "osaka", "mem-osaka-1", "2025-11-14T19:30", "lanterns", "dusk", 21),
-    photo("m-osaka-2", "osaka", null, "2025-11-15T12:00", "torii", "spring", 22),
-    photo("m-hokkaido-1", "hokkaido", "mem-hokkaido-1", "2025-01-10T18:10", "mountain", "winter", 31, true),
+    photo("m-osaka-2", "osaka", null, "2025-11-15T12:00", "horizon", "spring", 22),
+    photo("m-hokkaido-1", "hokkaido", "mem-hokkaido-1", "2025-01-10T18:10", "ridges", "winter", 31, true),
   ];
 
   return { version: 1, trips, places, memories, media };

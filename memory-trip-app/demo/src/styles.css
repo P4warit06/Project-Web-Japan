@@ -2,8 +2,8 @@
 @import "../../app/globals.css";
 
 :root {
-  --font-ui: "IBM Plex Sans Thai";
-  --font-voice: "Maitree";
+  --font-ui: "Noto Sans Thai Looped";
+  --font-voice: "Taviraj";
 }
 
 html {

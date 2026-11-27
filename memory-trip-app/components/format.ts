@@ -35,6 +35,13 @@ export function formatDateTime(iso: string, locale: Locale): string {
   });
 }
 
+/** The date a film camera burns into a print: 29 March 2026 -> "'26 3 29". Gregorian, UTC. */
+export function filmDate(iso: string): string {
+  const d = parse(iso);
+  if (!d) return "";
+  return `'${String(d.getUTCFullYear()).slice(-2)} ${d.getUTCMonth() + 1} ${d.getUTCDate()}`;
+}
+
 export function formatMonth(iso: string, locale: Locale): string {
   return fmt(iso, locale, { month: "long", year: "numeric" });
 }

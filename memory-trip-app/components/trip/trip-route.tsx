@@ -58,12 +58,12 @@ export function TripRouteLink({
   return (
     <Link
       href={`/trips/${trip.id}`}
-      className="-my-2 flex items-center gap-4 rounded-lg py-2 hover:bg-surface-2/60 active:bg-surface-2"
+      className="-my-2 flex items-center gap-4 rounded py-2 hover:bg-surface-2/60 active:bg-surface-2"
     >
       <div className="min-w-0 flex-1">
         <TripRouteBody trip={trip} t={t} locale={locale} />
       </div>
-      {trip.coverThumbUrl && <CoverThumb url={trip.coverThumbUrl} className="h-20 w-20 rounded-xl" />}
+      {trip.coverThumbUrl && <CoverThumb url={trip.coverThumbUrl} className="h-[5.5rem] w-[5.5rem]" />}
     </Link>
   );
 }

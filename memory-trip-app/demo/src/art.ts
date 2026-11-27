@@ -1,16 +1,26 @@
-// Sample "photos" for the demo: small generated SVG pictures, so the repository holds no
-// real photos and the page makes no network requests. Same input -> same picture.
+// Sample "photos" for the demo. Real photos cannot be shipped (no rights, no network), and flat
+// clip-art looks cheap next to a print, so these are soft-focus scenes with film grain and a
+// vignette: out-of-focus lights, ridges fading into mist, a hazy sunset. They are generated
+// SVG, so the repository holds no photos and the page makes no network requests.
+// Same input -> same picture.
 
-export type Palette = { skyTop: string; skyBottom: string; sun: string; far: string; near: string; accent: string };
+export type Palette = {
+  top: string; // sky / background, top
+  bottom: string; // sky / background, bottom
+  glow: string; // the brightest light
+  lights: string[]; // colours of out-of-focus lights
+  far: string; // distant land (pale)
+  near: string; // nearest land (dark)
+};
 
 export const PALETTES = {
-  spring: { skyTop: "#f7c6d4", skyBottom: "#fdeee6", sun: "#fff4d6", far: "#9fb4d6", near: "#4c6a8f", accent: "#e8739a" },
-  dusk: { skyTop: "#2b3a78", skyBottom: "#f19a6b", sun: "#ffd27a", far: "#5a4a7a", near: "#241c3a", accent: "#c4301c" },
-  night: { skyTop: "#0c1230", skyBottom: "#2a2f66", sun: "#f5f1d8", far: "#1a2150", near: "#0b0f26", accent: "#f2a1c0" },
-  winter: { skyTop: "#a9c4e8", skyBottom: "#eef4fb", sun: "#ffffff", far: "#c9d7ea", near: "#8aa0c0", accent: "#4a6fa5" },
+  spring: { top: "#9fb4cf", bottom: "#f3d3d6", glow: "#fff0dc", lights: ["#ffd5dc", "#fff4ee", "#f4a7bb", "#ffe3c4"], far: "#aebdd2", near: "#4d5f7a" },
+  dusk: { top: "#3a4a82", bottom: "#ee9a72", glow: "#ffd78a", lights: ["#ffb86b", "#ff8a5c", "#ffd9a0", "#d9576a"], far: "#8a7aa0", near: "#2b2540" },
+  night: { top: "#0c1430", bottom: "#27315f", glow: "#ffd59a", lights: ["#ffb347", "#ff6b3d", "#ffd9a0", "#e8452c", "#7fd0e0"], far: "#2b3768", near: "#0a0e22" },
+  winter: { top: "#9db4d3", bottom: "#f1f5fa", glow: "#ffffff", lights: ["#ffffff", "#dbe6f4", "#c2d3ea"], far: "#bccbe0", near: "#7d93b4" },
 } satisfies Record<string, Palette>;
 
-/** Small deterministic random numbers (mulberry32), so a picture never changes between runs. */
+/** Small deterministic random numbers (mulberry32). */
 function rng(seed: number): () => number {
   let a = seed >>> 0;
   return () => {
@@ -24,96 +34,96 @@ function rng(seed: number): () => number {
 
 const f = (n: number) => Math.round(n * 10) / 10;
 
-function frame(w: number, h: number, p: Palette, body: string, id: string): string {
-  return (
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">` +
-    `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">` +
-    `<stop offset="0" stop-color="${p.skyTop}"/><stop offset="1" stop-color="${p.skyBottom}"/></linearGradient></defs>` +
-    `<rect width="${w}" height="${h}" fill="url(#${id})"/>${body}</svg>`
-  );
-}
-
-/** A big mountain with a snow cap and a low sun. */
-function mountain(w: number, h: number, p: Palette, seed: number): string {
+/** Out-of-focus lights ("bokeh"): many soft discs, a few sharper ones for depth. */
+function bokeh(w: number, h: number, p: Palette, seed: number, count: number, yMin: number, yMax: number): string {
   const r = rng(seed);
-  const peakX = w * (0.45 + r() * 0.15);
-  const peakY = h * 0.34;
-  const baseY = h * 0.72;
-  const half = w * 0.52;
-  const snowY = peakY + h * 0.13;
-  const snowHalf = half * ((snowY - peakY) / (baseY - peakY));
-  return (
-    `<circle cx="${f(w * 0.22)}" cy="${f(h * 0.3)}" r="${f(h * 0.09)}" fill="${p.sun}" opacity=".9"/>` +
-    `<polygon points="${f(peakX - half)},${f(baseY)} ${f(peakX)},${f(peakY)} ${f(peakX + half)},${f(baseY)}" fill="${p.far}"/>` +
-    `<polygon points="${f(peakX - snowHalf)},${f(snowY)} ${f(peakX)},${f(peakY)} ${f(peakX + snowHalf)},${f(snowY)} ${f(peakX + snowHalf * 0.4)},${f(snowY + h * 0.03)} ${f(peakX)},${f(snowY - h * 0.01)} ${f(peakX - snowHalf * 0.45)},${f(snowY + h * 0.035)}" fill="#fff" opacity=".92"/>` +
-    `<path d="M0 ${f(h * 0.82)} Q ${f(w * 0.3)} ${f(h * 0.7)} ${f(w * 0.6)} ${f(h * 0.8)} T ${w} ${f(h * 0.78)} V ${h} H0 Z" fill="${p.near}"/>`
-  );
-}
-
-/** A torii gate against a setting sun. */
-function torii(w: number, h: number, p: Palette): string {
-  const cx = w / 2;
-  const top = h * 0.3;
-  const span = w * 0.5;
-  const post = w * 0.035;
-  const ground = h * 0.82;
-  return (
-    `<circle cx="${f(cx)}" cy="${f(h * 0.46)}" r="${f(h * 0.2)}" fill="${p.sun}" opacity=".85"/>` +
-    `<path d="M0 ${f(ground)} Q ${f(w * 0.5)} ${f(h * 0.76)} ${w} ${f(ground)} V ${h} H0 Z" fill="${p.near}"/>` +
-    `<rect x="${f(cx - span / 2)}" y="${f(top)}" width="${f(span)}" height="${f(h * 0.045)}" rx="6" fill="${p.accent}"/>` +
-    `<rect x="${f(cx - span / 2 - w * 0.03)}" y="${f(top - h * 0.03)}" width="${f(span + w * 0.06)}" height="${f(h * 0.035)}" rx="6" fill="${p.accent}"/>` +
-    `<rect x="${f(cx - span * 0.36)}" y="${f(top + h * 0.11)}" width="${f(span * 0.72)}" height="${f(h * 0.03)}" fill="${p.accent}"/>` +
-    `<rect x="${f(cx - span * 0.36 - post / 2)}" y="${f(top)}" width="${f(post)}" height="${f(ground - top)}" fill="${p.accent}"/>` +
-    `<rect x="${f(cx + span * 0.36 - post / 2)}" y="${f(top)}" width="${f(post)}" height="${f(ground - top)}" fill="${p.accent}"/>`
-  );
-}
-
-/** A moon and a branch full of blossoms. */
-function blossom(w: number, h: number, p: Palette, seed: number): string {
-  const r = rng(seed);
-  let out = `<circle cx="${f(w * 0.74)}" cy="${f(h * 0.24)}" r="${f(h * 0.1)}" fill="${p.sun}"/>`;
-  for (let i = 0; i < 40; i++) {
-    out += `<circle cx="${f(r() * w)}" cy="${f(r() * h * 0.55)}" r="${f(1 + r() * 2)}" fill="#fff" opacity="${f(0.3 + r() * 0.6)}"/>`;
+  let soft = "";
+  let sharp = "";
+  for (let i = 0; i < count; i++) {
+    const x = r() * w;
+    const y = h * (yMin + r() * (yMax - yMin));
+    const rad = w * (0.025 + r() * r() * 0.11);
+    const col = p.lights[Math.floor(r() * p.lights.length)];
+    const op = 0.25 + r() * 0.55;
+    const disc = `<circle cx="${f(x)}" cy="${f(y)}" r="${f(rad)}" fill="${col}" opacity="${f(op)}"/>`;
+    if (i % 5 === 0) sharp += disc;
+    else soft += disc;
   }
-  out += `<path d="M${f(-10)} ${f(h * 0.9)} C ${f(w * 0.25)} ${f(h * 0.6)}, ${f(w * 0.5)} ${f(h * 0.7)}, ${f(w * 0.75)} ${f(h * 0.4)} S ${f(w * 0.95)} ${f(h * 0.3)} ${f(w + 10)} ${f(h * 0.2)}" fill="none" stroke="${p.near}" stroke-width="${f(w * 0.014)}" stroke-linecap="round"/>`;
-  for (let i = 0; i < 70; i++) {
-    const t = r();
-    const x = t * w;
-    const y = h * (0.9 - t * 0.62) + (r() - 0.5) * h * 0.22;
-    out += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(w * (0.012 + r() * 0.018))}" fill="${p.accent}" opacity="${f(0.55 + r() * 0.4)}"/>`;
-  }
-  return out;
+  return `<g filter="url(#soft${seed})">${soft}</g><g filter="url(#crisp${seed})">${sharp}</g>`;
 }
 
-/** A street of paper lanterns. */
-function lanterns(w: number, h: number, p: Palette, seed: number): string {
+/** Ridges fading into mist: far ridges pale, near ridges dark, haze between them. */
+function ridges(w: number, h: number, p: Palette, seed: number): string {
   const r = rng(seed);
-  let out = `<rect y="${f(h * 0.78)}" width="${w}" height="${f(h * 0.22)}" fill="${p.near}"/>`;
-  for (let row = 0; row < 3; row++) {
-    const y = h * (0.2 + row * 0.2);
-    out += `<line x1="0" y1="${f(y - h * 0.05)}" x2="${w}" y2="${f(y - h * 0.02)}" stroke="${p.far}" stroke-width="2"/>`;
-    const n = 4 + row;
-    for (let i = 0; i < n; i++) {
-      const x = (i + 0.5 + (r() - 0.5) * 0.3) * (w / n);
-      const rad = w * (0.05 + r() * 0.02);
-      out +=
-        `<circle cx="${f(x)}" cy="${f(y)}" r="${f(rad * 2.1)}" fill="#ffb347" opacity=".12"/>` +
-        `<ellipse cx="${f(x)}" cy="${f(y)}" rx="${f(rad)}" ry="${f(rad * 1.25)}" fill="#e8452c"/>` +
-        `<rect x="${f(x - rad * 0.55)}" y="${f(y - rad * 1.4)}" width="${f(rad * 1.1)}" height="${f(rad * 0.25)}" fill="#2a1a1a"/>`;
+  let out = `<circle cx="${f(w * (0.3 + r() * 0.4))}" cy="${f(h * 0.3)}" r="${f(h * 0.16)}" fill="${p.glow}" opacity=".85" filter="url(#soft${seed})"/>`;
+  const layers = 5;
+  for (let l = 0; l < layers; l++) {
+    const t = l / (layers - 1); // 0 far .. 1 near
+    const base = h * (0.42 + t * 0.4);
+    const amp = h * (0.05 + t * 0.07);
+    let d = `M0 ${h} L0 ${f(base)}`;
+    const steps = 7;
+    for (let i = 1; i <= steps; i++) {
+      const x = (i / steps) * w;
+      const y = base - amp * (0.2 + r() * 0.8);
+      d += ` Q ${f(x - w / steps / 2)} ${f(y - amp * 0.6)} ${f(x)} ${f(y)}`;
+    }
+    d += ` L${w} ${h} Z`;
+    const col = mix(p.far, p.near, t);
+    out += `<path d="${d}" fill="${col}"/>`;
+    if (l < layers - 1) {
+      out += `<rect y="${f(base - amp)}" width="${w}" height="${f(h * 0.22)}" fill="url(#mist${seed})" opacity="${f(0.55 - t * 0.35)}"/>`;
     }
   }
   return out;
 }
 
-export type SceneKind = "mountain" | "torii" | "blossom" | "lanterns";
+/** A low sun on a hazy horizon with a dark strip of land. */
+function horizon(w: number, h: number, p: Palette, seed: number): string {
+  const r = rng(seed);
+  const y = h * 0.62;
+  let land = `M0 ${h} L0 ${f(y)}`;
+  for (let i = 1; i <= 12; i++) land += ` L${f((i / 12) * w)} ${f(y + (r() - 0.5) * h * 0.035)}`;
+  land += ` L${w} ${h} Z`;
+  return (
+    `<circle cx="${f(w * 0.5)}" cy="${f(y - h * 0.05)}" r="${f(h * 0.3)}" fill="${p.glow}" opacity=".55" filter="url(#soft${seed})"/>` +
+    `<circle cx="${f(w * 0.5)}" cy="${f(y - h * 0.04)}" r="${f(h * 0.075)}" fill="${p.glow}" filter="url(#crisp${seed})"/>` +
+    `<rect y="${f(y - h * 0.12)}" width="${w}" height="${f(h * 0.2)}" fill="url(#mist${seed})" opacity=".6"/>` +
+    `<path d="${land}" fill="${p.near}" filter="url(#crisp${seed})"/>`
+  );
+}
+
+function mix(a: string, b: string, t: number): string {
+  const pa = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
+  const pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
+  return `#${pa.map((v, i) => Math.round(v + (pb[i] - v) * t).toString(16).padStart(2, "0")).join("")}`;
+}
+
+export type SceneKind = "lanterns" | "blossom" | "ridges" | "horizon";
 
 /** Returns an SVG picture as a data URL, ready for <img src>. */
-export function scene(kind: SceneKind, palette: Palette, width = 1200, height = 900, seed = 1): string {
+export function scene(kind: SceneKind, p: Palette, width = 1200, height = 900, seed = 1): string {
+  const w = width;
+  const h = height;
   const body =
-    kind === "mountain" ? mountain(width, height, palette, seed)
-    : kind === "torii" ? torii(width, height, palette)
-    : kind === "blossom" ? blossom(width, height, palette, seed)
-    : lanterns(width, height, palette, seed);
-  const svg = frame(width, height, palette, body, `g${seed}`);
+    kind === "lanterns" ? bokeh(w, h, p, seed, 34, 0.05, 0.85)
+    : kind === "blossom" ? bokeh(w, h, p, seed, 46, 0.0, 0.8)
+    : kind === "ridges" ? ridges(w, h, p, seed)
+    : horizon(w, h, p, seed);
+  const ground = kind === "lanterns" ? `<rect y="${f(h * 0.82)}" width="${w}" height="${f(h * 0.18)}" fill="${p.near}" opacity=".9"/>` : "";
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">` +
+    `<defs>` +
+    `<linearGradient id="sky${seed}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.top}"/><stop offset="1" stop-color="${p.bottom}"/></linearGradient>` +
+    `<linearGradient id="mist${seed}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.bottom}" stop-opacity="0"/><stop offset=".6" stop-color="${p.bottom}"/><stop offset="1" stop-color="${p.bottom}" stop-opacity="0"/></linearGradient>` +
+    `<radialGradient id="vig${seed}" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></radialGradient>` +
+    `<filter id="soft${seed}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${f(w * 0.011)}"/></filter>` +
+    `<filter id="crisp${seed}"><feGaussianBlur stdDeviation="${f(w * 0.0025)}"/></filter>` +
+    `<filter id="grain${seed}" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="${seed}"/><feColorMatrix type="saturate" values="0"/></filter>` +
+    `</defs>` +
+    `<rect width="${w}" height="${h}" fill="url(#sky${seed})"/>${body}${ground}` +
+    `<rect width="${w}" height="${h}" filter="url(#grain${seed})" opacity=".16" style="mix-blend-mode:overlay"/>` +
+    `<rect width="${w}" height="${h}" fill="url(#vig${seed})"/>` +
+    `</svg>`;
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }

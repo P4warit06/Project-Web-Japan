@@ -5,7 +5,7 @@ export default async function Loading() {
   return (
     <div role="status" aria-live="polite" className="skeleton">
       <span className="sr-only">{t("common.loading")}</span>
-      <div aria-hidden="true" className="mb-8 h-9 w-2/3 rounded-lg bg-surface-2" />
+      <div aria-hidden="true" className="mb-8 h-9 w-2/3 rounded bg-surface-2" />
       <ul aria-hidden="true" className="rail rail-neutral">
         {[0, 1, 2].map((i) => (
           <li key={i} className="stop" style={{ "--line": "var(--rule)" } as React.CSSProperties}>

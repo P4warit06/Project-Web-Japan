@@ -11,7 +11,7 @@ Address: `https://<your-github-user>.github.io/Project-Web-Japan/` (for this rep
 | Screens and components | **the same files** (`components/`) | `components/` |
 | Validation of forms | **the same rules** (`features/*/schema.ts`, zod) | same |
 | Data | sample trips, kept in **your browser** (localStorage) | database |
-| Photos | sample pictures; your uploads are shrunk and kept in the browser (about 20 fit) | re-encoded, stored in R2, private |
+| Photos | generated soft-focus sample pictures (placeholders, see [DESIGN-DIRECTION.md](./DESIGN-DIRECTION.md)); your uploads are shrunk and kept in the browser (about 20 fit) | re-encoded, stored in R2, private |
 | Login, couple isolation, rate limits | **none** (nothing to protect: no server, no real data) | yes |
 
 Why not run the real app on GitHub Pages? Pages can only serve files ([About GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages)), and the real app needs a server for login, the database and photo processing. Next.js static export drops exactly those features ([Static Exports](https://nextjs.org/docs/app/guides/static-exports)).

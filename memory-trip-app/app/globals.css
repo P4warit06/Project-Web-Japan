@@ -4,51 +4,57 @@
    Memory Trip tokens. Light is default; dark follows the system.
    "Line" colours are for graphics only (rails, rings), one per trip.
 ------------------------------------------------------------------- */
+/* Palette: a station platform in the morning. Cool grey-green paper, deep slate ink, and
+   one deep teal (asagi) for links. Photos are printed on white; the date imprint is the
+   orange of a disposable-camera back. Stamp red (shu) is kept for danger. */
 :root {
-  --paper: #f3f3f8;
-  --surface: #ffffff;
-  --surface-2: #e8e9f3;
-  --ink: #172036;
-  --soft: #566080;
-  --rule: #d3d6e5;
-  --accent: #2b4590;
+  --paper: #e9ebe4;
+  --surface: #f6f6f1;
+  --surface-2: #dadfd6;
+  --ink: #1a2528;
+  --soft: #4f5d62;
+  --rule: #bcc4ba;
+  --accent: #14636f;
   --on-accent: #ffffff;
   --danger: #b3261e;
   --on-danger: #ffffff;
-  --focus: #2b4590;
+  --focus: #14636f;
+  --print: #fbfbf7; /* the white of a photo print: the same in light and dark */
+  --imprint: #e8832a;
 
-  --line-0: #2b4590;
-  --line-1: #c4501b;
-  --line-2: #4f7d3a;
-  --line-3: #b8456c;
-  --line-4: #1f7a8c;
-  --line-5: #a87500;
+  /* Trip line colours, named after Japanese traditional colours (see docs/DESIGN-DIRECTION.md) */
+  --line-0: #2f4f7f; /* ai, indigo */
+  --line-1: #c05a22; /* kaki, persimmon */
+  --line-2: #5a7d36; /* matcha */
+  --line-3: #bd5278; /* sakura */
+  --line-4: #1d7889; /* asagi */
+  --line-5: #a87a00; /* yamabuki */
 
-  --radius-control: 0.75rem;
-  --radius-sheet: 1.25rem;
+  --radius-control: 0.25rem;
+  --radius-sheet: 0.375rem;
   --tab-h: 3.75rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #10142a;
-    --surface: #1a2040;
-    --surface-2: #252c55;
-    --ink: #e9ecf7;
-    --soft: #a9b1cc;
-    --rule: #2f3862;
-    --accent: #9db2f5;
-    --on-accent: #10142a;
+    --paper: #121a1c;
+    --surface: #1b2528;
+    --surface-2: #26323a;
+    --ink: #e8ece6;
+    --soft: #a3b2b6;
+    --rule: #34464b;
+    --accent: #78c6d2;
+    --on-accent: #0f1a1c;
     --danger: #ff8a80;
     --on-danger: #2a0a08;
-    --focus: #9db2f5;
+    --focus: #78c6d2;
 
-    --line-0: #8da4f2;
-    --line-1: #f08a5d;
-    --line-2: #8cc070;
-    --line-3: #ee87a8;
-    --line-4: #5dc0d3;
-    --line-5: #e3b341;
+    --line-0: #8fa9d6;
+    --line-1: #ee9564;
+    --line-2: #9cc277;
+    --line-3: #ec8fb0;
+    --line-4: #62c2d3;
+    --line-5: #e0b440;
   }
 }
 
@@ -65,6 +71,7 @@
   --color-on-danger: var(--on-danger);
 
   --font-sans: var(--font-ui), system-ui, sans-serif;
+  --font-imprint: "DSEG7 Classic", ui-monospace, monospace;
   --font-serif: var(--font-voice), "Noto Serif Thai", serif;
 
   --text-body: 1rem;
@@ -114,6 +121,51 @@ h3 {
     overflow-wrap: anywhere;
   }
 
+  /* ---------- Photo print: the memorable element ----------
+     A photo is a print: white border, a hairline shadow, and the orange date imprint
+     of a film camera in the corner. The imprint repeats the date shown elsewhere, so
+     it is hidden from screen readers. */
+  .print {
+    position: relative;
+    background: var(--print);
+    padding: 0.4rem;
+    box-shadow:
+      0 0 0 1px rgb(0 0 0 / 0.06),
+      0 1px 3px rgb(0 0 0 / 0.22);
+  }
+  .print-lg {
+    padding: 0.6rem;
+  }
+  .print-frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-2);
+  }
+  .imprint {
+    position: absolute;
+    right: 0.55rem;
+    bottom: 0.45rem;
+    font-family: var(--font-imprint);
+    font-size: 0.8125rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--imprint);
+    text-shadow: 0 0 4px rgb(232 131 42 / 0.65);
+    pointer-events: none;
+  }
+  .print-lg .imprint {
+    font-size: 1.0625rem;
+    right: 0.9rem;
+    bottom: 0.8rem;
+  }
+
+  /* A line of small print on a ticket: dashed edge like a perforation. */
+  .note {
+    border: 1px dashed var(--soft);
+    padding: 0.625rem 1rem;
+    font-size: 0.9375rem;
+  }
+
   /* ---------- Buttons: 44px+ touch targets ---------- */
   .btn {
     display: inline-flex;
@@ -136,19 +188,19 @@ h3 {
     cursor: progress;
   }
   .btn-primary {
-    background: var(--accent);
-    color: var(--on-accent);
+    background: var(--ink);
+    color: var(--paper);
   }
   .btn-primary:hover {
-    background: color-mix(in srgb, var(--accent) 88%, var(--ink));
+    background: color-mix(in srgb, var(--ink) 85%, var(--accent));
   }
   .btn-secondary {
-    background: var(--surface);
+    background: transparent;
     color: var(--ink);
-    border-color: var(--rule);
+    border-color: var(--ink);
   }
   .btn-secondary:hover {
-    border-color: var(--soft);
+    background: var(--surface-2);
   }
   .btn-danger {
     background: var(--danger);
@@ -180,6 +232,7 @@ h3 {
     background: var(--surface);
     color: var(--ink);
     border: 1.5px solid var(--rule);
+    border-bottom-color: var(--soft);
     border-radius: var(--radius-control);
     font: inherit;
     line-height: 1.6;
@@ -205,7 +258,7 @@ h3 {
     align-items: center;
     min-height: 2.75rem;
     padding: 0.25rem 1rem;
-    border-radius: 999px;
+    border-radius: var(--radius-control);
     border: 1.5px solid var(--rule);
     background: var(--surface);
     cursor: pointer;
@@ -213,9 +266,9 @@ h3 {
   }
   .chip-input:checked + .chip,
   .chip[aria-current="true"] {
-    background: var(--accent);
-    color: var(--on-accent);
-    border-color: var(--accent);
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
   }
   .chip-input:focus-visible + .chip {
     outline: 3px solid var(--focus);

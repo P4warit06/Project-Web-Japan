@@ -50,8 +50,8 @@ function Stop({
             const rest = memory.media.length - 3;
             const last = i === 2 && rest > 0;
             return (
-              <li key={m.id} className="relative h-[4.5rem] w-[4.5rem] overflow-hidden rounded-lg bg-surface-2">
-                <Link href={last ? `/memories/${memory.id}` : `/gallery/${m.id}`} className="block h-full w-full">
+              <li key={m.id} className="print relative h-[4.75rem] w-[4.75rem] !p-[0.25rem]">
+                <Link href={last ? `/memories/${memory.id}` : `/gallery/${m.id}`} className="print-frame block h-full w-full">
                   <Photo media={m} alt={t("media.alt", { title: memory.title, n: i + 1 })} />
                   {last && (
                     <span
@@ -70,7 +70,7 @@ function Stop({
       {(memory.mood || memory.tags.length > 0 || showTrip) && (
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.9375rem]">
           {memory.mood && (
-            <span className="rounded-full bg-surface-2 px-3 py-0.5">{t(`mood.${memory.mood}`)}</span>
+            <span className="rounded-[var(--radius-control)] border border-rule px-2.5 py-0.5">{t(`mood.${memory.mood}`)}</span>
           )}
           {memory.tags.map((tag) => (
             <span key={tag} className="text-soft [overflow-wrap:anywhere]">

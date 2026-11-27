@@ -1,19 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Thai, Maitree } from "next/font/google";
+import { Noto_Sans_Thai_Looped, Taviraj } from "next/font/google";
 import { LocaleProvider } from "@/components/i18n/locale-provider";
 import { getT } from "@/lib/i18n/server";
+import "@fontsource/dseg7-classic/latin-400.css"; // the orange date imprint on photo prints
 import "./globals.css";
 
 // Both families carry real Thai AND Latin glyphs (Geist has no Thai).
-// Plex Sans Thai = interface. Maitree (serif) = the couple's own words.
-const ui = IBM_Plex_Sans_Thai({
+// Noto Sans Thai Looped = interface: the looped (traditional) Thai style reads easily at small sizes.
+// Taviraj (serif) = the couple's own words, like the printed captions of a photo album.
+const ui = Noto_Sans_Thai_Looped({
   variable: "--font-ui",
   subsets: ["thai", "latin"],
   weight: ["400", "500", "600"],
   display: "swap",
 });
 
-const voice = Maitree({
+const voice = Taviraj({
   variable: "--font-voice",
   subsets: ["thai", "latin"],
   weight: ["400", "500", "600"],

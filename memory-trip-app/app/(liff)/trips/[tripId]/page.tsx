@@ -5,7 +5,7 @@ import { deleteTripAction } from "@/features/trips/actions";
 import { getTrip } from "@/features/trips/service";
 import { getT } from "@/lib/i18n/server";
 import { BackLink } from "@/components/ui/back-link";
-import { lineStyle } from "@/components/format";
+import { filmDate, lineStyle } from "@/components/format";
 import { Photo, PhotoGrid } from "@/components/media/photo";
 import { PhotoUploader } from "@/components/media/photo-uploader";
 import { LinkButton, buttonClass } from "@/components/ui/button";
@@ -39,18 +39,22 @@ export default async function TripPage({ params }: Props) {
         {trip.coverThumbUrl && (
           // The line leaves the photo: a bar in the trip colour sits under the cover
           // and the route below picks it up.
-          <div
-            className="mb-5 aspect-[16/10] overflow-hidden rounded-[var(--radius-sheet)] border-b-[5px] border-[var(--line)] bg-surface-2"
-            style={lineStyle(trip.id)}
-          >
-            <Photo
-              media={
-                cover ?? { thumbUrl: trip.coverThumbUrl, fullUrl: trip.coverThumbUrl, width: 480, height: 300 }
-              }
-              variant="full"
-              priority
-              alt={t("media.coverAlt", { title: trip.title })}
-            />
+          <div className="print print-lg mb-6 border-b-[5px] border-[var(--line)]" style={lineStyle(trip.id)}>
+            <div className="print-frame aspect-[16/10]">
+              <Photo
+                media={
+                  cover ?? { thumbUrl: trip.coverThumbUrl, fullUrl: trip.coverThumbUrl, width: 480, height: 300 }
+                }
+                variant="full"
+                priority
+                alt={t("media.coverAlt", { title: trip.title })}
+              />
+              {cover && (
+                <span className="imprint" aria-hidden="true">
+                  {filmDate(cover.createdAt)}
+                </span>
+              )}
+            </div>
           </div>
         )}
         <TripRouteBody trip={trip} t={t} locale={locale} headingLevel={1} showDescription />

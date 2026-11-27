@@ -57,7 +57,7 @@ export function TabBar({
               <li key={key} className="hidden md:block">
                 <Link
                   href={href}
-                  className="flex min-h-11 items-center gap-3 rounded-lg px-3 font-medium text-soft hover:text-ink"
+                  className="flex min-h-11 items-center gap-3 rounded px-3 font-medium text-soft hover:text-ink"
                 >
                   <Icon className="h-6 w-6 shrink-0" />
                   <span className="truncate">{labels[key]}</span>
@@ -70,7 +70,7 @@ export function TabBar({
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`relative flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-1 text-xs leading-tight font-medium md:min-h-11 md:flex-row md:justify-start md:gap-3 md:rounded-lg md:px-3 md:text-base ${
+                className={`relative flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-1 text-xs leading-tight font-medium md:min-h-11 md:flex-row md:justify-start md:gap-3 md:rounded md:px-3 md:text-base ${
                   active ? "text-accent md:bg-surface-2" : mobileActive ? "text-accent md:text-soft md:hover:text-ink" : "text-soft hover:text-ink"
                 }`}
               >

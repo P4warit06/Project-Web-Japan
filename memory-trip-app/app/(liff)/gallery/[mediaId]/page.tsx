@@ -5,7 +5,7 @@ import { deleteMediaAction, setTripCoverAction } from "@/features/media/actions"
 import { getMedia } from "@/features/media/service";
 import { getTrip } from "@/features/trips/service";
 import { getT } from "@/lib/i18n/server";
-import { formatDate, lineStyle } from "@/components/format";
+import { filmDate, formatDate, lineStyle } from "@/components/format";
 import { Photo } from "@/components/media/photo";
 import { BackLink } from "@/components/ui/back-link";
 import { buttonClass } from "@/components/ui/button";
@@ -32,17 +32,22 @@ export default async function PhotoPage({ params }: Props) {
   return (
     <article>
       <BackLink href="/gallery" label={t("nav.gallery")} />
-      <div
-        className="mx-auto mb-2 max-h-[75dvh] overflow-hidden rounded-[var(--radius-control)] bg-surface-2 shadow-[0_5px_0_0_var(--line)]"
-        style={{ ...lineStyle(media.tripId), aspectRatio: `${media.width} / ${media.height}` }}
-      >
-        <Photo
-          media={media}
-          variant="full"
-          priority
-          alt={t("media.alt", { title: media.tripTitle, n: 1 })}
-          className="!object-contain"
-        />
+      <div className="print print-lg mx-auto mb-2 border-b-[5px] border-[var(--line)]" style={lineStyle(media.tripId)}>
+        <div
+          className="print-frame mx-auto max-h-[72dvh]"
+          style={{ aspectRatio: `${media.width} / ${media.height}` }}
+        >
+          <Photo
+            media={media}
+            variant="full"
+            priority
+            alt={t("media.alt", { title: media.tripTitle, n: 1 })}
+            className="!object-contain"
+          />
+          <span className="imprint" aria-hidden="true">
+            {filmDate(media.createdAt)}
+          </span>
+        </div>
       </div>
 
       <p className="mt-4 text-[0.9375rem] text-soft">

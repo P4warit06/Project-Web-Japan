@@ -40,7 +40,7 @@ export default async function MemoryPage({ params }: Props) {
       </p>
       {(memory.mood || memory.tags.length > 0) && (
         <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[0.9375rem]">
-          {memory.mood && <span className="rounded-full bg-surface-2 px-3 py-0.5">{t(`mood.${memory.mood}`)}</span>}
+          {memory.mood && <span className="rounded-[var(--radius-control)] border border-rule px-2.5 py-0.5">{t(`mood.${memory.mood}`)}</span>}
           {memory.tags.map((tag) => (
             <span key={tag} className="text-soft [overflow-wrap:anywhere]">
               #{tag}
