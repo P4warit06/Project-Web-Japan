@@ -24,7 +24,6 @@
   --night: #27282b; /* hero background */
   --on-night: #f4f4f1;
   --muted-night: #a9aaae;
-  --squiggle: #e8454a; /* the red wavy "spellcheck" underline */
   --print: #fbfbf7; /* the white of a photo print: the same in light and dark */
   --imprint: #e8832a;
 
@@ -133,29 +132,18 @@ h3 {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
-  /* Big headlines: a tight, high-contrast serif (Instrument Serif for Latin, Taviraj for Thai).
-     Regular weight only: Instrument Serif has no bold, and the browser must not fake one. */
+  /* Big headlines: a mincho serif (Shippori Mincho for Latin, Taviraj for Thai). Only the loaded
+     weight is used; the browser must not fake a bold. */
   .display {
     font-family: var(--font-display);
-    font-weight: 400;
+    font-weight: 600;
     font-synthesis: none;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     line-height: 1.08;
   }
   :lang(th) .display {
     letter-spacing: 0;
     line-height: 1.3; /* Thai stacks vowel and tone marks above and below the line */
-  }
-  /* The red wavy underline of a spell checker, used once per page on one phrase. */
-  .squiggle {
-    font-style: italic;
-    text-decoration: underline wavy var(--squiggle);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.18em;
-    text-decoration-skip-ink: none;
-  }
-  :lang(th) .squiggle {
-    font-style: normal;
   }
   /* Accent word in a display headline (large text only: 3:1 is enough at this size) */
   .hl {

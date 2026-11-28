@@ -22,19 +22,20 @@ Two earlier versions were rejected as generic. This one follows a reference the 
 | Hero with caret | Home opens with the dark hero: "Remember it together." types itself once (not for people who ask for reduced motion; the full text is always in the page for screen readers and no-JavaScript). |
 | Floating letters, two cursors | Same idea, drawn from this page's own letters; the two cursors stand for the two of you. |
 | Brush edge, grey band | Hand-painted SVG edge between hero, band and page. |
-| Statement + squiggle | "Your camera roll keeps where you were. *Not what you talked about.*" (Thai version included). The wavy underline is native CSS (`text-decoration: wavy`). |
+| Statement + squiggle | "Your camera roll keeps where you were. Not what you talked about." (Thai version included). Set in one plain style: the reference's italic phrase with a wavy underline was dropped because accenting one phrase is a common sign of generated pages. |
 | Illustrations | Original line art: hanging **paper cranes** (origami, fitting for Japan), a **stack of prints**, sparkles. Drawn by code with a pencil-wobble helper, so there are no image files. |
-| Type | **Instrument Serif** (Latin headlines; Thai headlines fall back to Taviraj), **Manrope** (Latin interface) with **Noto Sans Thai Looped** (Thai interface), Taviraj for the couple's own words. |
+| Type | **Shippori Mincho** (Latin headlines: the mincho serif of Japanese print, like a book title; Thai headlines fall back to Taviraj), **Zen Kaku Gothic New** (Latin interface, a Japanese-designed gothic) with **Noto Sans Thai Looped** (Thai interface), Taviraj for the couple's own words. Instrument Serif and Manrope were replaced: both are very common picks on generated pages. |
 
 Kept from the previous round because it is specific to this subject: photos are **prints** with a white border and the orange film-date imprint (DSEG7), trips are routes with Japanese-named line colours.
 
 ## Tokens (`app/globals.css`)
 
-Paper `#F4F4F1`, band `#E6E6E2`, ink `#17171A`, night `#27282B`, deep purple `#8A2AAE` for links and focus (6.3:1 on paper), bright purple `#C85BE8` only for large display text and the cursors (3.1:1, allowed for large text), squiggle `#E8454A`. Dark mode has its own set. Corners are 12 px.
+Paper `#F4F4F1`, band `#E6E6E2`, ink `#17171A`, night `#27282B`, deep purple `#8A2AAE` for links and focus (6.3:1 on paper), bright purple `#C85BE8` only for large display text and the cursors (3.1:1, allowed for large text). Dark mode has its own set. Corners are 12 px.
 
 ## Accessibility and performance notes
 
 - The hero headline has an `sr-only` copy with the full text; the typed text and the floating letters are `aria-hidden`.
+- Content no longer rises into view on scroll (a generic effect on every section). Motion that stays: the one-time typing hero, the sliding top-bar pill, photo prints settling and lifting, swaying cranes.
 - Motion (typing, drifting letters, floating cursors, caret blink) only runs when the system does not ask for reduced motion.
 - Fonts are self-hosted (Next.js font loading in the app, Fontsource in the demo); doodles are inline SVG (no requests).
 

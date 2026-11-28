@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1178.0",
+    "@fontsource/shippori-mincho": "^5.3.0",
+    "@fontsource/zen-kaku-gothic-new": "^5.3.1",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
     "dotenv": "^18.0.10",
@@ -37,8 +39,6 @@
   },
   "devDependencies": {
     "@fontsource/dseg7-classic": "^5.3.0",
-    "@fontsource/instrument-serif": "^5.3.0",
-    "@fontsource/manrope": "^5.3.0",
     "@fontsource/noto-sans-thai-looped": "^5.3.0",
     "@fontsource/taviraj": "^5.3.0",
     "@tailwindcss/postcss": "^4",

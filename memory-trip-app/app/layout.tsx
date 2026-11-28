@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Manrope, Noto_Sans_Thai_Looped, Taviraj } from "next/font/google";
+import { Noto_Sans_Thai_Looped, Shippori_Mincho, Taviraj, Zen_Kaku_Gothic_New } from "next/font/google";
 import { LocaleProvider } from "@/components/i18n/locale-provider";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { getT } from "@/lib/i18n/server";
@@ -16,20 +16,21 @@ const uiThai = Noto_Sans_Thai_Looped({
   display: "swap",
 });
 
-// Latin letters of the interface: Manrope, a clean grotesque. Thai glyphs fall back to the looped face above.
-const uiLatin = Manrope({
+// Latin letters of the interface: Zen Kaku Gothic New, a Japanese-designed gothic (fits a Japan trip book).
+// Thai glyphs fall back to the looped face above.
+const uiLatin = Zen_Kaku_Gothic_New({
   variable: "--font-ui-latin",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "700"],
   display: "swap",
 });
 
-// Big headlines (Latin): Instrument Serif, tight and high-contrast. Thai headlines fall back to Taviraj.
-const display = Instrument_Serif({
+// Big headlines (Latin): Shippori Mincho, a mincho (the serif of Japanese print), like a book title.
+// Thai headlines fall back to Taviraj.
+const display = Shippori_Mincho({
   variable: "--font-display-latin",
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
+  weight: "600",
   display: "swap",
 });
 

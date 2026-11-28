@@ -17,9 +17,8 @@ function Sway({ className, delay = 0, children }: { className: string; delay?: n
   );
 }
 
-/** A big, left-aligned sentence on the light grey band: plain serif, then one phrase in italic
- *  under a red wavy underline. Cranes and a stack of prints are drawn around it. The sentence
- *  rises into place once, when it scrolls into view. */
+/** A big, left-aligned two-part sentence on the light grey band, in one plain style (no accented
+ *  phrase). Cranes and a stack of prints are drawn around it. */
 export function Statement({ lead, emphasis }: { lead: string; emphasis: string }) {
   return (
     <section
@@ -35,17 +34,12 @@ export function Statement({ lead, emphasis }: { lead: string; emphasis: string }
       <Sparkle seed={2} className="absolute top-12 right-[26%] hidden h-5 w-5 sm:block" />
       <Sparkle seed={5} className="absolute top-60 right-[4%] hidden h-4 w-4 sm:block" />
       <div className="relative mx-auto max-w-[64rem] px-6 pt-6 pb-28 sm:pt-10 lg:pb-40">
-        <m.div
-          initial={{ opacity: 0, y: 26 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-          transition={{ duration: 0.8, ease: [0.22, 0.8, 0.3, 1] }}
-        >
+        <div>
           <PrintStack className="mb-6 w-32 sm:w-44" />
           <p className="display max-w-[46rem] text-[clamp(2rem,5.6vw,4.25rem)]">
-            {lead} <em className="squiggle">{emphasis}</em>
+            {lead} {emphasis}
           </p>
-        </m.div>
+        </div>
       </div>
       <BrushEdge className="absolute inset-x-0 -bottom-px h-8 text-paper sm:h-14" seed={21} />
     </section>

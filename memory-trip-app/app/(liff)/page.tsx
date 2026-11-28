@@ -8,7 +8,6 @@ import { LinkButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PlusIcon } from "@/components/ui/icons";
 import { MemoryStops } from "@/components/memory/memory-stops";
-import { Reveal } from "@/components/motion/reveal";
 import { Hero } from "@/components/shell/hero";
 import { Statement } from "@/components/shell/statement";
 import { TripRouteList } from "@/components/trip/trip-route";
@@ -70,7 +69,6 @@ export default async function DashboardPage() {
         />
       ) : (
         <>
-          <Reveal>
           <section aria-labelledby="latest-trips">
             <div className="mb-4 flex items-center justify-between gap-3">
               <h2 id="latest-trips" className="text-lg font-semibold">
@@ -82,9 +80,6 @@ export default async function DashboardPage() {
             </div>
             <TripRouteList trips={data.latestTrips} t={t} locale={locale} />
           </section>
-          </Reveal>
-
-          <Reveal>
           <section aria-labelledby="recent-memories">
             <div className="mb-4 flex items-center justify-between gap-3">
               <h2 id="recent-memories" className="text-lg font-semibold">
@@ -110,7 +105,6 @@ export default async function DashboardPage() {
               />
             )}
           </section>
-          </Reveal>
         </>
       )}
     </div>
