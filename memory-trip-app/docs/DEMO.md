@@ -36,8 +36,8 @@ npm run demo:preview   # serves dist-demo/ at http://localhost:4173/Project-Web-
 ## Publishing (one-time setup, then automatic)
 
 1. GitHub: **Settings > Pages > Build and deployment > Source: GitHub Actions**.
-2. GitHub: **Settings > Environments > github-pages > Deployment branches**: allow `phase3` (a new Pages environment only accepts the default branch, otherwise the deploy step fails with "not allowed to deploy to github-pages due to environment protection rules").
-3. Push to `phase3`, or run **Actions > Demo on GitHub Pages > Run workflow**. The address appears in the run summary.
+2. GitHub: **Settings > Environments > github-pages > Deployment branches**: allow `main` (a new Pages environment only accepts the default branch, otherwise the deploy step fails with "not allowed to deploy to github-pages due to environment protection rules").
+3. Push to `main`, or run **Actions > Demo on GitHub Pages > Run workflow**. The address appears in the run summary.
 
 The workflow runs the normal CI first (lint, typecheck, tests, build, audit) and only then publishes. Repositories on a free plan need to be **public** to use Pages ([plans](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#about-github-pages)).
 

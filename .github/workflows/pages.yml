@@ -3,12 +3,12 @@
 #
 # One-time setup (repository owner, in the GitHub web UI):
 #   1. Settings > Pages > Build and deployment > Source: "GitHub Actions"
-#   2. Settings > Environments > github-pages > Deployment branches: allow "phase3" (and "main")
+#   2. Settings > Environments > github-pages > Deployment branches: allow "main"
 name: Demo on GitHub Pages
 
 on:
   push:
-    branches: [phase3]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
